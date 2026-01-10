@@ -31,7 +31,8 @@ app.use('/api/payment', paymentRoutes)
 app.use(errorHandler)
 
 const PORT = process.env.PORT || 5000
-const MONGO = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/career-web'
+// Accept both MONGODB_URI (common convention) and MONGO_URI (legacy)
+const MONGO = process.env.MONGODB_URI || process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/career-web'
 
 async function start() {
   try {
