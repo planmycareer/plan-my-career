@@ -1,0 +1,21 @@
+collegeName,branchName,exam,state,quota,category,year,opening_rank,closing_rank,college_type,fees
+IIT Delhi,Computer Science and Engineering,JEE,Delhi,AI,General,2024,1,100,IIT,₹2,00,000
+IIT Delhi,Computer Science and Engineering,JEE,Delhi,AI,OBC,2024,50,300,IIT,₹2,00,000
+IIT Delhi,Computer Science and Engineering,JEE,Delhi,AI,SC,2024,200,800,IIT,₹2,00,000
+IIT Delhi,Electrical Engineering,JEE,Delhi,AI,General,2024,150,400,IIT,₹2,00,000
+IIT Bombay,Computer Science and Engineering,JEE,Maharashtra,AI,General,2024,1,90,IIT,₹2,00,000
+IIT Bombay,Computer Science and Engineering,JEE,Maharashtra,AI,OBC,2024,45,280,IIT,₹2,00,000
+IIT Madras,Computer Science and Engineering,JEE,Tamil Nadu,AI,General,2024,80,200,IIT,₹2,00,000
+IIT Kanpur,Computer Science and Engineering,JEE,Uttar Pradesh,AI,General,2024,120,350,IIT,₹2,00,000
+NIT Trichy,Computer Science and Engineering,JEE,Tamil Nadu,HS,General,2024,500,2000,NIT,₹1,50,000
+NIT Trichy,Computer Science and Engineering,JEE,Tamil Nadu,OS,General,2024,1500,4000,NIT,₹1,50,000
+NIT Warangal,Computer Science and Engineering,JEE,Telangana,HS,General,2024,600,2500,NIT,₹1,50,000
+NIT Surathkal,Computer Science and Engineering,JEE,Karnataka,HS,General,2024,700,3000,NIT,₹1,50,000
+IIIT Hyderabad,Computer Science and Engineering,JEE,Telangana,AI,General,2024,300,800,IIIT,₹3,00,000
+IIIT Bangalore,Computer Science and Engineering,JEE,Karnataka,AI,General,2024,400,1200,IIIT,₹3,00,000
+BITS Pilani,Computer Science and Engineering,JEE,Rajasthan,AI,General,2024,2000,8000,Private,₹4,50,000
+AIIMS Delhi,MBBS,NEET,Delhi,AI,General,2024,1,50,Medical,₹1,40,000
+AIIMS Delhi,MBBS,NEET,Delhi,AI,OBC,2024,30,150,Medical,₹1,40,000
+AIIMS Jodhpur,MBBS,NEET,Rajasthan,AI,General,2024,80,300,Medical,₹1,40,000
+JIPMER Puducherry,MBBS,NEET,Puducherry,AI,General,2024,100,400,Medical,₹1,00,000
+CMC Vellore,MBBS,NEET,Tamil Nadu,AI,General,2024,150,500,Medical,₹5,00,000

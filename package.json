@@ -1,0 +1,48 @@
+{
+  "name": "career-counselling-platform",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"vite\" \"nodemon server.js --watch server --ext js,json\"",
+    "dev:client": "vite",
+    "dev:server": "nodemon server.js --watch server --ext js,json",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "node server.js",
+    "setup": "node setup.js",
+    "seed:questions": "node seedQuestions.js",
+    "seed:cutoffs": "node seedCutoffs.js",
+    "seed:all": "node seedQuestions.js && node seedCutoffs.js"
+  },
+  "dependencies": {
+    "axios": "^1.13.2",
+    "bcrypt": "^5.1.0",
+    "body-parser": "^1.20.2",
+    "concurrently": "^8.2.0",
+    "cors": "^2.8.5",
+    "csv-parser": "^3.2.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
+    "html-pdf-node": "^1.0.8",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.3.1",
+    "multer": "^2.0.2",
+    "puppeteer": "^24.34.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-router-dom": "^7.12.0",
+    "recharts": "^3.6.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.18",
+    "nodemon": "^3.0.2",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
+    "vite": "^5.1.4"
+  }
+}
