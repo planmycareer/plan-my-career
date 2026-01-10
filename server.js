@@ -15,7 +15,17 @@ import { errorHandler } from './server/middleware/errorHandler.js'
 dotenv.config()
 
 const app = express()
-app.use(cors())
+
+// CORS Configuration - Allow frontend domains
+app.use(cors({
+  origin: [
+    'http://localhost:5173', // Local development
+    'https://career-web-nk75.pages.dev', // Cloudflare Pages
+    /\.pages\.dev$/, // All Cloudflare Pages subdomains
+  ],
+  credentials: true
+}))
+
 app.use(bodyParser.json())
 
 // API routes
