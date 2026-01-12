@@ -4,23 +4,24 @@ import Payment from '../models/Payment.js'
 import User from '../models/User.js'
 
 // Service pricing (in INR)
-const SERVICE_PRICES = {
-  'college-predictor': 299, // ₹299 for 30 days
-  'career-test': 499, // ₹499 for lifetime
-  'counselling-session': 999, // ₹999 per session
-  'full-access': 1499 // ₹1499 for 90 days
+// Keep both originalPrice (MRP) and price (selling price) so UI can show strikethrough.
+const SERVICE_PRICING = {
+  'college-predictor': { originalPrice: 9999, price: 8999 },
+  'career-test': { originalPrice: 499, price: 499 },
+  'counselling-session': { originalPrice: 4999, price: 3500 },
+  'full-access': { originalPrice: 12499, price: 10000 },
 }
 
 const SERVICE_VALIDITY = {
   'college-predictor': 30, // 30 days
-  'career-test': 365 * 10, // 10 years (lifetime)
-  'counselling-session': 90, // 90 days to book
-  'full-access': 90 // 90 days
+  'career-test': 30 , 
+  'counselling-session': 30, 
+  'full-access': 30 
 }
 
 // Create payment order
 export async function createPaymentOrder(userId, service) {
-  if (!SERVICE_PRICES[service]) {
+  if (!SERVICE_PRICING[service]) {
     throw { statusCode: 400, message: 'Invalid service type' }
   }
 
@@ -29,7 +30,7 @@ export async function createPaymentOrder(userId, service) {
     throw { statusCode: 404, message: 'User not found' }
   }
 
-  const amount = SERVICE_PRICES[service]
+  const amount = SERVICE_PRICING[service].price
   const orderId = `ORDER_${Date.now()}_${Math.random().toString(36).substr(2, 9).toUpperCase()}`
   
   // Calculate expiry date
@@ -122,7 +123,8 @@ export async function checkAccess(userId, service) {
 
   return {
     hasAccess: false,
-    price: SERVICE_PRICES[service],
+  price: SERVICE_PRICING[service]?.price,
+  originalPrice: SERVICE_PRICING[service]?.originalPrice,
     validity: SERVICE_VALIDITY[service]
   }
 }
@@ -157,9 +159,10 @@ export async function getActiveSubscriptions(userId) {
 
 // Get service pricing info
 export function getServicePricing() {
-  return Object.keys(SERVICE_PRICES).map(service => ({
+  return Object.keys(SERVICE_PRICING).map(service => ({
     service,
-    price: SERVICE_PRICES[service],
+    price: SERVICE_PRICING[service].price,
+    originalPrice: SERVICE_PRICING[service].originalPrice,
     validity: SERVICE_VALIDITY[service],
     validityText: SERVICE_VALIDITY[service] >= 365 
       ? 'Lifetime' 

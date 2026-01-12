@@ -109,9 +109,9 @@ const Pricing = () => {
   const serviceInfo = {
     'college-predictor': {
       title: 'College Predictor',
-      description: 'Get accurate college predictions based on your JEE/NEET rank',
+      description: 'Get accurate college predictions based on your JEE/NEET/CET rank',
       features: [
-        'Predict colleges for JEE & NEET',
+        'Predict colleges for JEE,NEET&CET',
         'Filter by category, quota, state',
         'Round-wise predictions',
         'Gender-specific cutoffs',
@@ -135,7 +135,8 @@ const Pricing = () => {
       title: 'Counselling Session',
       description: 'One-on-one session with expert career counsellor',
       features: [
-        '60-minute personal session',
+        '30 days validity',
+        '45-minute personal session',
         'Expert career guidance',
         'College selection advice',
         'Stream selection help',
@@ -151,7 +152,7 @@ const Pricing = () => {
         'Career Assessment Test',
         'One Counselling Session',
         'Priority support',
-        '90 days validity'
+        '30 days validity'
       ],
       icon: '⭐',
       badge: 'BEST VALUE'
@@ -196,7 +197,12 @@ const Pricing = () => {
                 <p className="text-gray-600 mb-4">{info.description}</p>
 
                 <div className="mb-6">
-                  <span className="text-4xl font-bold text-blue-600">₹{item.price}</span>
+                  <div className="flex items-end gap-2">
+                    {item.originalPrice && item.originalPrice > item.price && (
+                      <span className="text-lg text-gray-400 line-through">₹{item.originalPrice}</span>
+                    )}
+                    <span className="text-4xl font-bold text-blue-600">₹{item.price}</span>
+                  </div>
                   <span className="text-gray-500 ml-2">/ {item.validityText}</span>
                 </div>
 

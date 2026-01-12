@@ -310,7 +310,7 @@ export default function Home() {
           <div className="text-center mt-16">
             <Link 
               to="/book-session" 
-              className="inline-block px-12 py-5 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-lg rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              className="inline-block px-12 py-5 bg-gradient-to-r from-blue-800 to-blue-800 text-white font-bold text-lg rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
               Start Your Journey Today →
             </Link>
@@ -416,7 +416,7 @@ export default function Home() {
           </div>
 
           {/* Our Promise */}
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl shadow-2xl p-12 text-center text-white">
+          <div className="bg-gradient-to-r from-blue-800 to-blue-800 rounded-3xl shadow-2xl p-12 text-center text-white">
             <div className="text-6xl mb-6">🎯</div>
             <h3 className="text-3xl font-bold mb-4">Our Promise</h3>
             <p className="text-xl leading-relaxed max-w-3xl mx-auto">

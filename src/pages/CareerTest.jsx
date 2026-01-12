@@ -8,6 +8,7 @@ export default function CareerTest() {
   const [answers, setAnswers] = useState({})
   const [selectedOption, setSelectedOption] = useState('')
   const [hasAccess, setHasAccess] = useState(false)
+  const [testStarted, setTestStarted] = useState(false)
   const [loading, setLoading] = useState(true)
   const [questions, setQuestions] = useState([])
   const [loadingQuestions, setLoadingQuestions] = useState(false)
@@ -53,6 +54,9 @@ export default function CareerTest() {
       // The API returns { success: true, data: { hasAccess: true/false } }
       const hasAccessValue = result.data?.hasAccess || result.hasAccess || false
       setHasAccess(hasAccessValue)
+
+  // Access just means user purchased. Don't auto-start the test.
+  setTestStarted(false)
       
       // If user has access, fetch questions
       if (hasAccessValue) {
@@ -232,9 +236,20 @@ export default function CareerTest() {
 
   // Start timer when test is ready (questions are loaded and access allowed)
   useEffect(() => {
-    const isReady = Array.isArray(questions) && questions.length > 0 && !loading && !loadingQuestions && hasAccess === true
+    const isReady = Array.isArray(questions) && questions.length > 0 && !loading && !loadingQuestions && hasAccess === true && testStarted === true
     if (isReady) startTimer()
-  }, [questions.length, loading, loadingQuestions, hasAccess])
+  }, [questions.length, loading, loadingQuestions, hasAccess, testStarted])
+
+  // Stop timer if user hasn't started the test yet (or if they leave the test UI)
+  useEffect(() => {
+    if (!testStarted) {
+      stopTimer()
+      hasStartedRef.current = false
+      // Ensure a fresh 120:00 when they eventually start
+      localStorage.removeItem(TIMER_KEY)
+      setTimeLeft(TEST_DURATION_SECONDS)
+    }
+  }, [testStarted])
 
   // Auto-submit when time reaches 0
   useEffect(() => {
@@ -278,6 +293,63 @@ export default function CareerTest() {
         <div className="text-center">
           <div className="text-6xl mb-4">⚠️</div>
           <p className="text-gray-600 text-lg">No questions available. Please contact support.</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Access granted but user hasn't started the test yet
+  if (hasAccess && questions.length > 0 && !testStarted) {
+    return (
+      <div className="min-h-[80vh] bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12 text-center">
+            <div className="w-24 h-24 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center text-5xl mx-auto mb-6 shadow-lg">
+              ✅
+            </div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">You're all set!</h1>
+            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+              Your purchase is active. When you're ready, click <span className="font-semibold">Start Test</span>.
+            </p>
+
+            <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 mb-8 text-left max-w-2xl mx-auto">
+              <div className="flex items-start gap-3">
+                <div className="text-2xl">⏱️</div>
+                <div>
+                  <div className="font-semibold text-gray-900">Time limit</div>
+                  <div className="text-gray-600 text-sm">120 minutes (timer starts after you click Start Test)</div>
+                </div>
+              </div>
+              <div className="mt-4 flex items-start gap-3">
+                <div className="text-2xl">📝</div>
+                <div>
+                  <div className="font-semibold text-gray-900">Questions</div>
+                  <div className="text-gray-600 text-sm">{questions.length} questions</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <button
+                onClick={() => {
+                  setCurrentQuestion(0)
+                  setAnswers({})
+                  setSelectedOption('')
+                  setTestStarted(true)
+                }}
+                className="inline-block px-10 py-4 bg-gradient-to-r from-blue-800 to-blue-800 text-white font-bold text-lg rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              >
+                Start Test →
+              </button>
+
+              <Link
+                to="/pricing"
+                className="inline-block px-10 py-4 bg-gray-100 text-gray-800 font-bold text-lg rounded-full hover:bg-gray-200 transition-all duration-300"
+              >
+                View Plans
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -331,10 +403,7 @@ export default function CareerTest() {
                   <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white mr-3 flex-shrink-0 mt-1">
                     ✓
                   </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Lifetime Access</h4>
-                    <p className="text-gray-600 text-sm">One-time payment, access forever</p>
-                  </div>
+                 
                 </div>
               </div>
             </div>
@@ -342,7 +411,7 @@ export default function CareerTest() {
             <div className="space-y-4">
               <Link
                 to="/pricing"
-                className="inline-block px-10 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-lg rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                className="inline-block px-10 py-4 bg-gradient-to-r from-blue-800 to-blue-800 text-white font-bold text-lg rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
               >
                 View Pricing & Purchase
               </Link>

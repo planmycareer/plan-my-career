@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { API_ENDPOINTS } from '../config/api'
 
 function CollegePredictor() {
   const navigate = useNavigate()
@@ -36,14 +37,20 @@ function CollegePredictor() {
 
   const checkServiceAccess = async (token) => {
     try {
-      const response = await fetch('http://localhost:5000/api/payment/check-access/college-predictor', {
+  const response = await fetch(API_ENDPOINTS.PAYMENT.CHECK_ACCESS('college-predictor'), {
         headers: { Authorization: `Bearer ${token}` }
       })
       const data = await response.json()
-      setHasAccess(data.data)
+
+  if (!response.ok) {
+    throw new Error(data?.message || 'Failed to check access')
+  }
+
+  setHasAccess(data.data)
       setAccessLoading(false)
     } catch (error) {
       console.error('Error checking access:', error)
+  setError(error?.message || 'Unable to check access. Please try again.')
       setAccessLoading(false)
     }
   }
@@ -88,7 +95,7 @@ function CollegePredictor() {
         requestData.state = formData.state
       }
 
-      const response = await fetch('http://localhost:5000/api/predictor/college', {
+  const response = await fetch(`${API_ENDPOINTS.BASE}/predictor/college`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -159,12 +166,17 @@ function CollegePredictor() {
               College Predictor is a premium service. Get accurate predictions for your college admissions!
             </p>
             <div className="bg-white/20 rounded-xl p-6 mb-8">
-              <p className="text-2xl font-bold mb-2">₹{hasAccess.price}</p>
-              <p className="text-sm opacity-90">Valid for {hasAccess.validity} days</p>
+              <div className="flex items-baseline justify-center gap-3 mb-2">
+                {hasAccess.originalPrice && Number(hasAccess.originalPrice) > Number(hasAccess.price) ? (
+                  <span className="text-lg opacity-80 line-through">1{hasAccess.originalPrice}</span>
+                ) : null}
+                <span className="text-2xl font-bold">1{hasAccess.price}</span>
+              </div>
+              <p className="text-sm opacity-90">Valid for {hasAccess.validity ?? hasAccess.validityDays ?? 'N/A'} days</p>
             </div>
             <button
               onClick={() => navigate('/pricing')}
-              className="bg-white text-blue-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors shadow-lg"
+              className="bg-white text-blue-800 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors shadow-lg"
             >
               Purchase Now →
             </button>
