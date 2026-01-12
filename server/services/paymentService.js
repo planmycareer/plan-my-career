@@ -6,10 +6,10 @@ import User from '../models/User.js'
 // Service pricing (in INR)
 // Keep both originalPrice (MRP) and price (selling price) so UI can show strikethrough.
 const SERVICE_PRICING = {
-  'college-predictor': { originalPrice: 9999, price: 8999 },
+  'college-predictor': { originalPrice: 9999, price: 999 },
   'career-test': { originalPrice: 499, price: 499 },
-  'counselling-session': { originalPrice: 4999, price: 3500 },
-  'full-access': { originalPrice: 12499, price: 10000 },
+  'counselling-session': { originalPrice: 5499, price: 1999 },
+  'full-access': { originalPrice: 12499, price: 2499 },
 }
 
 const SERVICE_VALIDITY = {

@@ -94,7 +94,7 @@ export const sessionPackages = [
   {
     id: 1,
     type: 'Online Session',
-    price: '999',
+    price: '1499',
     features: [
       '45-minute video call',
       'Career assessment review',
@@ -107,9 +107,9 @@ export const sessionPackages = [
   {
     id: 2,
     type: 'Offline Session',
-    price: '1499',
+    price: '1999',
     features: [
-      '1-hour in-person meeting',
+      '45 min in-person meeting',
       'Detailed career assessment',
       'Parent consultation included',
       'Physical report handover',
