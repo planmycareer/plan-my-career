@@ -11,15 +11,21 @@ import bookingRoutes from './server/routes/bookingRoutes.js'
 import adminRoutes from './server/routes/adminRoutes.js'
 import paymentRoutes from './server/routes/paymentRoutes.js'
 import { errorHandler } from './server/middleware/errorHandler.js'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
 dotenv.config()
 
 const app = express()
 
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
 // CORS Configuration - Allow frontend domains
 app.use(cors({
   origin: [
     'http://localhost:5173', // Local development
+    'http://localhost:5174', // Local development (alternative port)
     'https://career-web-nk75.pages.dev', // Cloudflare Pages
     /\.pages\.dev$/, // All Cloudflare Pages subdomains
   ],
@@ -27,6 +33,9 @@ app.use(cors({
 }))
 
 app.use(bodyParser.json())
+
+// Serve generated PDFs
+app.use('/pdfs', express.static(path.join(__dirname, 'uploads', 'pdfs')))
 
 // API routes
 app.use('/api/auth', authRoutes)

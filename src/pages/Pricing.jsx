@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
 
 const Pricing = () => {
   const [pricing, setPricing] = useState([]);
@@ -15,7 +16,7 @@ const Pricing = () => {
 
   const fetchPricing = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/payment/pricing');
+      const response = await axios.get(API_ENDPOINTS.PAYMENT.PRICING);
       setPricing(response.data.data);
       setLoading(false);
     } catch (error) {
@@ -33,13 +34,17 @@ const Pricing = () => {
       return;
     }
 
+    console.log('Token found:', token ? 'Yes' : 'No');
+    console.log('Token preview:', token ? `${token.substring(0, 20)}...` : 'N/A');
+
     setSelectedService(service);
     setProcessing(true);
 
     try {
       // Create payment order
+      console.log('Creating payment order for:', service.service);
       const response = await axios.post(
-        'http://localhost:5000/api/payment/create-order',
+        API_ENDPOINTS.PAYMENT.CREATE_ORDER,
         { service: service.service },
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -47,6 +52,7 @@ const Pricing = () => {
       );
 
       const order = response.data.data;
+      console.log('Order created:', order);
 
       // In production, integrate with Razorpay/Stripe
       // For now, simulate payment
@@ -57,7 +63,7 @@ const Pricing = () => {
       if (confirmPayment) {
         // Simulate payment verification
         await axios.post(
-          'http://localhost:5000/api/payment/verify',
+          API_ENDPOINTS.PAYMENT.VERIFY,
           {
             orderId: order.orderId,
             transactionId: `TXN_${Date.now()}`,
@@ -83,7 +89,17 @@ const Pricing = () => {
       }
     } catch (error) {
       console.error('Payment error:', error);
-      alert(error.response?.data?.message || 'Payment failed. Please try again.');
+      console.error('Error response:', error.response?.data);
+      console.error('Error status:', error.response?.status);
+      
+      if (error.response?.status === 401) {
+        alert('Your session has expired. Please login again.');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        navigate('/login');
+      } else {
+        alert(error.response?.data?.message || 'Payment failed. Please try again.');
+      }
     } finally {
       setProcessing(false);
       setSelectedService(null);
@@ -144,14 +160,14 @@ const Pricing = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
         <div className="text-xl text-gray-600">Loading pricing...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 py-12 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-800 mb-4">Choose Your Plan</h1>
@@ -165,11 +181,11 @@ const Pricing = () => {
               <div
                 key={item.service}
                 className={`bg-white rounded-2xl shadow-xl p-8 transform hover:scale-105 transition-transform duration-300 ${
-                  item.service === 'full-access' ? 'ring-4 ring-indigo-500' : ''
+                  item.service === 'full-access' ? 'ring-4 ring-blue-500' : ''
                 }`}
               >
                 {info.badge && (
-                  <div className="bg-indigo-500 text-white text-sm font-bold px-4 py-1 rounded-full inline-block mb-4">
+                  <div className="bg-blue-800 text-white text-sm font-bold px-4 py-1 rounded-full inline-block mb-4">
                     {info.badge}
                   </div>
                 )}
@@ -180,7 +196,7 @@ const Pricing = () => {
                 <p className="text-gray-600 mb-4">{info.description}</p>
 
                 <div className="mb-6">
-                  <span className="text-4xl font-bold text-indigo-600">₹{item.price}</span>
+                  <span className="text-4xl font-bold text-blue-600">₹{item.price}</span>
                   <span className="text-gray-500 ml-2">/ {item.validityText}</span>
                 </div>
 
@@ -200,8 +216,8 @@ const Pricing = () => {
                   disabled={processing && selectedService?.service === item.service}
                   className={`w-full py-3 rounded-lg font-semibold transition-colors ${
                     item.service === 'full-access'
-                      ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
-                      : 'bg-gray-800 hover:bg-gray-900 text-white'
+                      ? 'bg-blue-800 hover:bg-blue-900 text-white'
+                      : 'bg-blue-800 hover:bg-blue-900 text-white'
                   } disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
                   {processing && selectedService?.service === item.service

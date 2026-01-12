@@ -1,7 +1,11 @@
 // API Configuration
 // Automatically uses production or development URL based on environment
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://career-web-nk75.onrender.com/api'
+// Check if running on localhost
+const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+const API_BASE_URL = isLocalhost 
+  ? 'http://localhost:5000/api' 
+  : (import.meta.env.VITE_API_URL || 'https://career-web-nk75.onrender.com/api')
 
 export const API_ENDPOINTS = {
   // Base URL

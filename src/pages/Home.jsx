@@ -12,7 +12,7 @@ export default function Home() {
       
 
       {/* About Us Section */}
-      <section className="py-20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 relative overflow-hidden">
         {/* Background Logo Watermark */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <img 
@@ -28,9 +28,9 @@ export default function Home() {
           </div>
 
           {/* Description Box */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 mb-16 border-l-4 border-indigo-600">
+          <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 mb-16 border-l-4 border-blue-600">
             <p className="text-xl text-gray-700 leading-relaxed">
-              PlanMyCareer is a professional Career Counselling and Admission Guidance Center dedicated to helping students after 10th and 12th make the right Academic and Career Decisions.
+              PlanMyCareer is a professional Career Counselling and Admission Guidance Center dedicated to helping students after 10<sup>TH</sup> and 12<sup>TH</sup> make the right Academic and Career Decisions.
             </p>
             <p className="text-xl text-gray-700 leading-relaxed mt-4">
               We understand that confusion, peer pressure, and lack of proper information often lead students to choose the wrong career path. Our goal is to eliminate this confusion by providing Expert Counselling, Aptitude-based Analysis, and Step-by-Step Admission Support.
@@ -61,19 +61,21 @@ export default function Home() {
                   </div>
                   <h3 className="text-3xl font-bold text-gray-900">Our Vision</h3>
                 </div>
-                <p className="text-xl text-gray-700 leading-relaxed">
+                <p className="text-xl text-gray-700 leading-relaxed mb-6">
                   To become India's most trusted career guidance platform, helping millions of students make confident, 
                   informed decisions about their future. We envision a world where every student has access to 
                   personalized career counseling, accurate college predictions, and comprehensive assessment tools.
                 </p>
+                
+                
               </div>
             </div>
 
             {/* Right: Key Stats */}
             <div className="space-y-12">
-              <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-2xl p-8 text-white">
+              <div className="bg-gradient-to-br from-blue-800 to-blue-800 rounded-2xl shadow-2xl p-8 text-white">
                 <h3 className="text-2xl font-bold mb-6">Why Choose Us?</h3>
-                <div className="space-y-5">
+                <div className="space-y-12">
                   <div className="flex items-start">
                     <div className="w-8 h-7 bg-white/20 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
                       ✓
@@ -83,15 +85,7 @@ export default function Home() {
                       <p className="text-sm opacity-90">7-section scientific assessment covering aptitude, interests, personality, and skills</p>
                     </div>
                   </div>
-                  <div className="flex items-start">
-                    <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
-                      ✓
-                    </div>
-                    <div>
-                      <h4 className="font-semibold mb-1">AI-Powered College Predictor</h4>
-                      <p className="text-sm opacity-90">Accurate predictions with 50,000+ cutoff data points for JEE & NEET</p>
-                    </div>
-                  </div>
+                  
                   <div className="flex items-start">
                     <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
                       ✓
@@ -124,7 +118,7 @@ export default function Home() {
 
               <div className="grid grid-cols-2 gap-6">
                 <div className="bg-white rounded-xl shadow-lg p-6 text-center">
-                  <div className="text-4xl font-bold text-indigo-600 mb-2">50K+</div>
+                  <div className="text-4xl font-bold text-blue-600 mb-2">50K+</div>
                   <div className="text-gray-600 text-sm">Cutoff Data Points</div>
                 </div>
                 <div className="bg-white rounded-xl shadow-lg p-6 text-center">
@@ -143,6 +137,35 @@ export default function Home() {
             </div>
           </div>
 
+          {/* Action Buttons Section */}
+          <div className="max-w-4xl mx-auto mt-12 mb-6">
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl shadow-lg p-8">
+              <h3 className="text-3xl font-bold text-center text-gray-900 mb-6">
+                 Take the First Step Towards Your Dream Career
+              </h3>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link 
+                  to="/career-test" 
+                  className="group px-8 py-4 bg-gradient-to-r from-blue-800 to-blue-900 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-blue-900 hover:to-blue-950 transition-all duration-300 text-center transform hover:-translate-y-1"
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <span>Book Career Test</span>
+                  </div>
+                  <p className="text-xs mt-1 opacity-90">Discover your ideal career path</p>
+                </Link>
+                <Link 
+                  to="/book-session" 
+                  className="group px-8 py-4 bg-gradient-to-r from-blue-800 to-blue-900 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-blue-900 hover:to-blue-950 transition-all duration-300 text-center transform hover:-translate-y-1"
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <span>Book Counselling</span>
+                  </div>
+                  <p className="text-xs mt-1 opacity-90">Get expert guidance from counselors</p>
+                </Link>
+              </div>
+            </div>
+          </div>
+          
           {/* Our Values */}
           <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12">
             <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">Our Core Values</h3>
@@ -210,9 +233,36 @@ export default function Home() {
           </div>
         </div>
       </section>
-
+{/* Action Buttons Section */}
+          <div className="max-w-4xl mx-auto mt-12 mb-6">
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl shadow-lg p-8">
+              <h3 className="text-3xl font-bold text-center text-gray-900 mb-6">
+                 Take the First Step Towards Your Dream Career
+              </h3>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link 
+                  to="/career-test" 
+                  className="group px-8 py-4 bg-gradient-to-r from-blue-800 to-blue-900 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-blue-900 hover:to-blue-950 transition-all duration-300 text-center transform hover:-translate-y-1"
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <span>Book Career Test</span>
+                  </div>
+                  <p className="text-xs mt-1 opacity-90">Discover your ideal career path</p>
+                </Link>
+                <Link 
+                  to="/book-session" 
+                  className="group px-8 py-4 bg-gradient-to-r from-blue-800 to-blue-900 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-blue-900 hover:to-blue-950 transition-all duration-300 text-center transform hover:-translate-y-1"
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <span>Book Counselling</span>
+                  </div>
+                  <p className="text-xs mt-1 opacity-90">Get expert guidance from counselors</p>
+                </Link>
+              </div>
+            </div>
+          </div>
       {/* How It Works Section */}
-      <section className="py-20 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-br from-blue-50 via-blue-50 to-purple-50 relative overflow-hidden">
         {/* Background Logo Watermark */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <img 
@@ -234,7 +284,7 @@ export default function Home() {
                 {/* Connector Arrow for desktop */}
                 {index < howItWorksSteps.length - 1 && (
                   <div className="hidden md:block absolute top-20 left-[60%] w-[80%] h-0.5 z-0">
-                    <div className="w-full h-full bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300"></div>
+                    <div className="w-full h-full bg-gradient-to-r from-blue-300 via-purple-300 to-pink-300"></div>
                     <div className="absolute right-0 top-1/2 -translate-y-1/2 w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[10px] border-l-pink-300"></div>
                   </div>
                 )}
@@ -259,8 +309,8 @@ export default function Home() {
 
           <div className="text-center mt-16">
             <Link 
-              to="/career-test" 
-              className="inline-block px-12 py-5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-lg rounded-full hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              to="/book-session" 
+              className="inline-block px-12 py-5 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-lg rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
               Start Your Journey Today →
             </Link>
@@ -282,14 +332,14 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Why Choose PlanMyCareer?</h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-indigo-600 to-purple-600 mx-auto mt-6"></div>
+            <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto mt-6"></div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
             {/* Feature 1 */}
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-lg p-8 border-l-4 border-indigo-600 hover:shadow-xl transition-all duration-300">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-50 rounded-2xl shadow-lg p-8 border-l-4 border-blue-600 hover:shadow-xl transition-all duration-300">
               <div className="flex items-start mb-4">
-                <div className="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4 flex-shrink-0">
+                <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4 flex-shrink-0">
                   ✓
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900">Student & Parent-Friendly Counselling</h3>
@@ -366,7 +416,7 @@ export default function Home() {
           </div>
 
           {/* Our Promise */}
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl shadow-2xl p-12 text-center text-white">
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl shadow-2xl p-12 text-center text-white">
             <div className="text-6xl mb-6">🎯</div>
             <h3 className="text-3xl font-bold mb-4">Our Promise</h3>
             <p className="text-xl leading-relaxed max-w-3xl mx-auto">
@@ -376,6 +426,34 @@ export default function Home() {
         </div>
       </section>
 
+{/* Action Buttons Section */}
+          <div className="max-w-4xl mx-auto mt-12 mb-6">
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl shadow-lg p-8">
+              <h3 className="text-3xl font-bold text-center text-gray-900 mb-6">
+                 Take the First Step Towards Your Dream Career
+              </h3>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link 
+                  to="/career-test" 
+                  className="group px-8 py-4 bg-gradient-to-r from-blue-800 to-blue-900 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-blue-900 hover:to-blue-950 transition-all duration-300 text-center transform hover:-translate-y-1"
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <span>Book Career Test</span>
+                  </div>
+                  <p className="text-xs mt-1 opacity-90">Discover your ideal career path</p>
+                </Link>
+                <Link 
+                  to="/book-session" 
+                  className="group px-8 py-4 bg-gradient-to-r from-blue-800 to-blue-900 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-blue-900 hover:to-blue-950 transition-all duration-300 text-center transform hover:-translate-y-1"
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <span>Book Counselling</span>
+                  </div>
+                  <p className="text-xs mt-1 opacity-90">Get expert guidance from counselors</p>
+                </Link>
+              </div>
+            </div>
+          </div>
       {/* Testimonials Section */}
       <section className="py-20 bg-gradient-to-br from-primary/5 to-purple-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -388,11 +466,7 @@ export default function Home() {
             {testimonials.map((testimonial) => (
               <div key={testimonial.id} className="card">
                 <div className="flex items-center mb-4">
-                  <img
-                    src={testimonial.image}
-                    alt={testimonial.name}
-                    className="w-14 h-14 rounded-full mr-4 border-2 border-primary"
-                  />
+                  
                   <div>
                     <h4 className="font-bold text-gray-900">{testimonial.name}</h4>
                     <p className="text-sm text-gray-600">{testimonial.grade}</p>
@@ -413,17 +487,17 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-primary to-indigo-700">
+      <section className="py-20 bg-gradient-to-r from-blue-800 to-blue-800">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold text-white mb-6">Ready to Discover Your Perfect Career?</h2>
-          <p className="text-xl text-indigo-100 mb-8">
+          <p className="text-xl text-blue-200 mb-8">
             Take the first step towards your dream career with our AI-powered assessment
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/career-test" className="px-8 py-4 bg-white text-primary font-bold rounded-lg hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl">
+            <Link to="/career-test" className="group px-8 py-4 bg-white text-blue-800 font-semibold rounded-xl shadow-lg hover:shadow-xl hover:bg-gray-50 transition-all duration-300 text-center transform hover:-translate-y-1">
               Take The Career Test
             </Link>
-            <Link to="/book-session" className="px-8 py-4 bg-transparent border-2 border-white text-white font-bold rounded-lg hover:bg-white hover:text-primary transition-all">
+            <Link to="/book-session" className="group px-8 py-4 bg-white text-blue-800 font-semibold rounded-xl shadow-lg hover:shadow-xl hover:bg-gray-50 transition-all duration-300 text-center transform hover:-translate-y-1">
               Book Counselling Session
             </Link>
           </div>

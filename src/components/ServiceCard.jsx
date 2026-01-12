@@ -8,7 +8,7 @@ export default function ServiceCard({ icon, title, description, delay = 0 }) {
       style={{ animationDelay: `${delay}ms` }}
     >
       {/* Icon */}
-      <div className="w-14 h-14 bg-gradient-to-br from-primary to-indigo-600 rounded-lg flex items-center justify-center mb-4 shadow-lg">
+      <div className="w-14 h-14 bg-gradient-to-br from-blue-800 to-blue-900 rounded-lg flex items-center justify-center mb-4 shadow-lg">
         <div className="text-white text-2xl">{icon}</div>
       </div>
 
@@ -19,7 +19,7 @@ export default function ServiceCard({ icon, title, description, delay = 0 }) {
       <ul className="text-gray-600 leading-relaxed space-y-2">
         {descriptionLines.map((line, index) => (
           <li key={index} className="flex items-start">
-            <span className="text-indigo-600 mr-2 flex-shrink-0">•</span>
+            <span className="text-blue-800 mr-2 flex-shrink-0">•</span>
             <span>{line.trim()}</span>
           </li>
         ))}

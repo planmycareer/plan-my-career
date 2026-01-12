@@ -54,10 +54,10 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-white to-white-600 rounded-lg flex items-center justify-center">
-              <img src="logo1 jpg.jpg" alt="Logo" className="w-20 h-15" />
+            <div className="w-20 h-20 bg-gradient-to-br from-white to-white-600 rounded-lg flex items-center justify-center">
+              <img src="logo1 jpg.jpg" alt="Logo" className="w-18 h-16 object-contain" />
             </div>
-            <span className="text-xl font-bold text-gray-900 hidden sm:block">PLAN MY CAREER</span>
+            <span className="text-xl font-bold text-gray-900 hidden sm:block" style={{ fontFamily: "'Geometr415 Blk BT Black', sans-serif" }}>PlanMyCareer</span>
           </Link>
 
           {/* Desktop Menu */}

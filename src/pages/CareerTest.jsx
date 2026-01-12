@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { questions, generateReport } from '../data/questions'
+import { API_ENDPOINTS } from '../config/api'
 import TestStep from '../components/TestStep'
 
 export default function CareerTest() {
@@ -9,6 +9,8 @@ export default function CareerTest() {
   const [selectedOption, setSelectedOption] = useState('')
   const [hasAccess, setHasAccess] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [questions, setQuestions] = useState([])
+  const [loadingQuestions, setLoadingQuestions] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -32,7 +34,7 @@ export default function CareerTest() {
         return
       }
 
-      const response = await fetch('http://localhost:5000/api/payment/check-access/career-test', {
+      const response = await fetch(`${API_ENDPOINTS.PAYMENT.CHECK_ACCESS('career-test')}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -51,6 +53,11 @@ export default function CareerTest() {
       // The API returns { success: true, data: { hasAccess: true/false } }
       const hasAccessValue = result.data?.hasAccess || result.hasAccess || false
       setHasAccess(hasAccessValue)
+      
+      // If user has access, fetch questions
+      if (hasAccessValue) {
+        await fetchQuestions(token)
+      }
     } catch (error) {
       console.error('Error checking access:', error)
       setHasAccess(false)
@@ -59,14 +66,50 @@ export default function CareerTest() {
     }
   }
 
-  const progress = ((currentQuestion + 1) / questions.length) * 100
+  const fetchQuestions = async (token) => {
+    try {
+      setLoadingQuestions(true)
+      const response = await fetch(API_ENDPOINTS.TEST.QUESTIONS, {
+        headers: {
+          'Authorization': `Bearer ${token || localStorage.getItem('token')}`
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch questions')
+      }
+
+      const result = await response.json()
+      console.log('Fetched questions:', result.data.length)
+      
+      // Transform API questions to match the frontend format
+      const transformedQuestions = result.data.map(q => ({
+        id: q.id,
+        section: q.section,
+        subsection: q.subsection,
+        question: q.question,
+        options: q.options.map((opt, idx) => ({
+          value: idx,
+          label: opt
+        }))
+      }))
+      
+      setQuestions(transformedQuestions)
+    } catch (error) {
+      console.error('Error fetching questions:', error)
+      alert('Failed to load questions. Please try again.')
+    } finally {
+      setLoadingQuestions(false)
+    }
+  }
 
   const handleOptionSelect = (value) => {
     setSelectedOption(value)
   }
 
   const handleNext = () => {
-    if (!selectedOption) return
+    // Check if an option is selected (including 0)
+    if (selectedOption === '' || selectedOption === null || selectedOption === undefined) return
 
     // Save answer
     setAnswers({
@@ -90,8 +133,9 @@ export default function CareerTest() {
     }
   }
 
-  const handleSubmit = () => {
-    if (!selectedOption) return
+  const handleSubmit = async () => {
+    // Check if an option is selected (including 0)
+    if (selectedOption === '' || selectedOption === null || selectedOption === undefined) return
 
     // Save final answer
     const finalAnswers = {
@@ -99,27 +143,141 @@ export default function CareerTest() {
       [questions[currentQuestion].id]: selectedOption,
     }
 
-    // Generate report
-    const report = generateReport(finalAnswers)
+    try {
+      setLoading(true)
+      const token = localStorage.getItem('token')
+      
+      // Submit test to new API
+      const response = await fetch(API_ENDPOINTS.TEST.SUBMIT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ answers: finalAnswers })
+      })
 
-    // Store in localStorage
-    localStorage.setItem('careerTestAnswers', JSON.stringify(finalAnswers))
-    localStorage.setItem('careerReport', JSON.stringify(report))
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || 'Failed to submit test')
+      }
 
-    // Redirect to report page
-    navigate('/report')
+      const result = await response.json()
+      console.log('Test submitted:', result)
+
+      // Store report data
+      localStorage.setItem('careerTestAnswers', JSON.stringify(finalAnswers))
+      localStorage.setItem('careerReport', JSON.stringify(result.data.report))
+      // Persist latest test id separately (report payload doesn't include Report _id)
+      if (result.data.testId) {
+        localStorage.setItem('testId', result.data.testId)
+      }
+      localStorage.setItem('testId', result.data.testId)
+
+      // Redirect to report page
+      navigate('/report')
+    } catch (error) {
+      console.error('Error submitting test:', error)
+      alert('Failed to submit test: ' + error.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const currentQ = questions[currentQuestion]
   const isLastQuestion = currentQuestion === questions.length - 1
+  const progress = questions.length > 0 ? ((currentQuestion + 1) / questions.length) * 100 : 0
+
+  // ===== Timer (120 minutes) =====
+  const TEST_DURATION_SECONDS = 120 * 60
+  const TIMER_KEY = 'careerTest_timerStartedAt'
+
+  const [timeLeft, setTimeLeft] = useState(TEST_DURATION_SECONDS)
+  const timerRef = useRef(null);
+  const hasStartedRef = useRef(false);
+
+  const formatTime = (totalSeconds) => {
+    const s = Math.max(0, totalSeconds);
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = s % 60;
+    const two = (n) => String(n).padStart(2, "0");
+    return h > 0 ? `${two(h)}:${two(m)}:${two(sec)}` : `${two(m)}:${two(sec)}`;
+  };
+
+  const startTimer = () => {
+    if (hasStartedRef.current) return;
+    hasStartedRef.current = true;
+
+    // Persist the start time so refresh doesn't reset the timer
+    const existing = localStorage.getItem(TIMER_KEY)
+    const startedAtMs = existing ? Number(existing) : Date.now()
+    if (!existing) localStorage.setItem(TIMER_KEY, String(startedAtMs))
+
+    // Initialize timeLeft immediately (no 1s delay)
+    const initialLeft = Math.max(0, TEST_DURATION_SECONDS - Math.floor((Date.now() - startedAtMs) / 1000))
+    setTimeLeft(initialLeft)
+
+    timerRef.current = setInterval(() => {
+      const startedAt = Number(localStorage.getItem(TIMER_KEY) || startedAtMs)
+      const left = Math.max(0, TEST_DURATION_SECONDS - Math.floor((Date.now() - startedAt) / 1000))
+      setTimeLeft(left)
+    }, 1000);
+  };
+
+  const stopTimer = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = null;
+  };
+
+  // Start timer when test is ready (questions are loaded and access allowed)
+  useEffect(() => {
+    const isReady = Array.isArray(questions) && questions.length > 0 && !loading && !loadingQuestions && hasAccess === true
+    if (isReady) startTimer()
+  }, [questions.length, loading, loadingQuestions, hasAccess])
+
+  // Auto-submit when time reaches 0
+  useEffect(() => {
+    if (!hasStartedRef.current) return;
+    if (timeLeft !== 0) return;
+
+    stopTimer();
+
+  // Clear persisted timer
+  localStorage.removeItem(TIMER_KEY)
+
+    // Prefer submit if exists, otherwise just lock UI
+    if (typeof handleSubmit === "function") {
+      handleSubmit();
+    }
+  }, [timeLeft]);
+
+  // Stop timer when component unmounts
+  useEffect(() => {
+    return () => stopTimer();
+  }, []);
 
   // Show loading state
-  if (loading) {
+  if (loading || loadingQuestions) {
     return (
-      <div className="min-h-[80vh] bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12 flex items-center justify-center">
+      <div className="min-h-[80vh] bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg">Checking access...</p>
+          <p className="text-gray-600 text-lg">
+            {loadingQuestions ? 'Loading questions...' : 'Checking access...'}
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  // Show message if questions not loaded yet
+  if (hasAccess && questions.length === 0) {
+    return (
+      <div className="min-h-[80vh] bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4">⚠️</div>
+          <p className="text-gray-600 text-lg">No questions available. Please contact support.</p>
         </div>
       </div>
     )
@@ -128,7 +286,7 @@ export default function CareerTest() {
   // Show paywall if user doesn't have access
   if (!hasAccess) {
     return (
-      <div className="min-h-[80vh] bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12">
+      <div className="min-h-[80vh] bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12 text-center">
             <div className="w-24 h-24 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-5xl mx-auto mb-6 shadow-lg">
@@ -139,7 +297,7 @@ export default function CareerTest() {
               Our comprehensive Career Assessment Test is a premium feature that requires payment to access.
             </p>
             
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-8 mb-8">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-50 rounded-xl p-8 mb-8">
               <h3 className="text-2xl font-bold text-gray-900 mb-6">What You'll Get:</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
                 <div className="flex items-start">
@@ -184,7 +342,7 @@ export default function CareerTest() {
             <div className="space-y-4">
               <Link
                 to="/pricing"
-                className="inline-block px-10 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-lg rounded-full hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                className="inline-block px-10 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-lg rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
               >
                 View Pricing & Purchase
               </Link>
@@ -195,7 +353,7 @@ export default function CareerTest() {
                     setLoading(true)
                     checkServiceAccess()
                   }}
-                  className="text-indigo-600 hover:text-indigo-800 font-semibold underline"
+                  className="text-blue-600 hover:text-blue-800 font-semibold underline"
                 >
                   Click here to check access again
                 </button>
@@ -208,12 +366,29 @@ export default function CareerTest() {
   }
 
   return (
-    <div className="min-h-[80vh] bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12">
+    <div className="min-h-[80vh] bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Career Assessment Test</h1>
           <p className="text-xl text-gray-600">Answer honestly for accurate results</p>
+        </div>
+
+        {/* Timer Bar */}
+        <div className="max-w-4xl mx-auto px-4 mb-4">
+          <div className="flex items-center justify-between rounded-xl border bg-white/80 backdrop-blur px-4 py-3">
+            <div className="text-sm font-medium text-gray-700">
+              Time Remaining
+            </div>
+
+            <div
+              className={`text-sm font-semibold ${
+                timeLeft <= 5 * 60 ? "text-red-600" : "text-gray-900"
+              }`}
+            >
+              {formatTime(timeLeft)}
+            </div>
+          </div>
         </div>
 
         {/* Progress Bar */}
@@ -231,10 +406,15 @@ export default function CareerTest() {
         </div>
 
         {/* Section Badge */}
-        <div className="mb-6">
-          <span className="inline-block px-4 py-2 bg-primary/10 text-primary font-semibold rounded-full text-sm">
+        <div className="mb-6 flex flex-wrap gap-2">
+          <span className="inline-block px-4 py-2 bg-blue-800/10 text-blue-800 font-semibold rounded-full text-sm">
             {currentQ.section}
           </span>
+          {currentQ.subsection && (
+            <span className="inline-block px-4 py-2 bg-purple-600/10 text-purple-600 font-semibold rounded-full text-sm">
+              {currentQ.subsection}
+            </span>
+          )}
         </div>
 
         {/* Question Card */}
@@ -298,9 +478,9 @@ export default function CareerTest() {
           {isLastQuestion ? (
             <button
               onClick={handleSubmit}
-              disabled={!selectedOption}
+              disabled={selectedOption === '' || selectedOption === null || selectedOption === undefined}
               className={`px-8 py-3 font-semibold rounded-lg transition-all ${
-                selectedOption
+                (selectedOption !== '' && selectedOption !== null && selectedOption !== undefined)
                   ? 'btn-primary'
                   : 'bg-gray-100 text-gray-400 cursor-not-allowed'
               }`}
@@ -313,9 +493,9 @@ export default function CareerTest() {
           ) : (
             <button
               onClick={handleNext}
-              disabled={!selectedOption}
+              disabled={selectedOption === '' || selectedOption === null || selectedOption === undefined}
               className={`px-8 py-3 font-semibold rounded-lg transition-all ${
-                selectedOption
+                (selectedOption !== '' && selectedOption !== null && selectedOption !== undefined)
                   ? 'btn-primary'
                   : 'bg-gray-100 text-gray-400 cursor-not-allowed'
               }`}
@@ -328,19 +508,7 @@ export default function CareerTest() {
           )}
         </div>
 
-        {/* Progress Steps */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4">
-          {['Interests', 'Skills', 'Career Goals'].map((section, idx) => (
-            <TestStep
-              key={idx}
-              number={idx + 1}
-              title={section}
-              description={`Understanding your ${section.toLowerCase()}`}
-              isActive={currentQ.section === section}
-              isCompleted={currentQuestion > idx * 3}
-            />
-          ))}
-        </div>
+       
       </div>
     </div>
   )

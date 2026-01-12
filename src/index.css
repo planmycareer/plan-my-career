@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom Font Import */
+@import url('https://fonts.cdnfonts.com/css/geometr415-blk-bt-black');
+
 /* Custom base styles */
 @layer base {
   body {
@@ -12,11 +15,15 @@
 /* Custom component styles */
 @layer components {
   .btn-primary {
-    @apply px-6 py-3 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5;
+    @apply px-6 py-3 bg-blue-800 text-white font-semibold rounded-lg shadow-md hover:bg-blue-900 transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5;
   }
   
   .btn-secondary {
-    @apply px-6 py-3 bg-white text-primary font-semibold rounded-lg border-2 border-primary hover:bg-primary hover:text-white transition-all duration-200 shadow-sm hover:shadow-md;
+    @apply px-6 py-3 bg-white text-blue-800 font-semibold rounded-lg border-2 border-blue-800 hover:bg-blue-800 hover:text-white transition-all duration-200 shadow-sm hover:shadow-md;
+  }
+  
+  .btn-blue-800 {
+    @apply px-6 py-3 bg-blue-800 text-white font-semibold rounded-lg shadow-md hover:bg-blue-900 transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5;
   }
   
   .card {
@@ -24,6 +31,6 @@
   }
   
   .input-field {
-    @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200;
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-800 focus:border-transparent transition-all duration-200;
   }
 }

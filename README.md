@@ -171,7 +171,7 @@ npm run preview
 
 ## 🎨 Design Highlights
 
-- **Color Scheme**: Primary (Indigo), Secondary (Green), Accent (Amber)
+- **Color Scheme**: Primary (blue), Secondary (Green), Accent (Amber)
 - **Typography**: Inter font family
 - **Components**: Card-based, shadow effects, smooth transitions
 - **Responsive**: Mobile-first design (breakpoints: sm, md, lg)

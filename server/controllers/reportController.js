@@ -1,6 +1,6 @@
 // Enhanced Report Controller
 
-import { generateReportFromTest, getReportById, getUserReports, generateReportPDF } from '../services/reportService.js'
+import { generateReportFromTest, getReportById, getUserReports, generateReportPDF, generateReportSectionPDF } from '../services/reportService.js'
 
 export async function generateReport(req, res, next) {
   try {
@@ -56,6 +56,23 @@ export async function downloadPDF(req, res, next) {
       pdfUrl,
       message: 'PDF generated successfully',
     })
+  } catch (err) {
+    next(err)
+  }
+}
+
+export async function downloadSectionPDF(req, res, next) {
+  try {
+    const { reportId, section } = req.params
+    const report = await getReportById(reportId)
+
+    // Ownership check
+    if (req.user.role !== 'admin' && String(report.user._id) !== String(req.user._id)) {
+      return res.status(403).json({ success: false, message: 'Forbidden' })
+    }
+
+    const { pdfUrl } = await generateReportSectionPDF(reportId, section)
+    res.json({ success: true, pdfUrl })
   } catch (err) {
     next(err)
   }

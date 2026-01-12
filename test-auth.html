@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auth Test</title>
+</head>
+<body>
+    <h1>Authentication Tester</h1>
+    
+    <div>
+        <h2>Current Token:</h2>
+        <textarea id="token" rows="5" cols="80" readonly></textarea>
+        <br><br>
+        <button onclick="clearToken()">Clear Token</button>
+        <button onclick="testToken()">Test Token</button>
+    </div>
+    
+    <div>
+        <h2>Login:</h2>
+        <input type="email" id="email" placeholder="Email" value="test@test.com"><br>
+        <input type="password" id="password" placeholder="Password" value="password123"><br>
+        <button onclick="login()">Login</button>
+    </div>
+    
+    <div>
+        <h2>Response:</h2>
+        <pre id="response"></pre>
+    </div>
+    
+    <script>
+        window.onload = function() {
+            const token = localStorage.getItem('token');
+            document.getElementById('token').value = token || 'No token found';
+        };
+        
+        function clearToken() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            document.getElementById('token').value = 'Token cleared';
+            document.getElementById('response').textContent = 'Token and user data cleared from localStorage';
+        }
+        
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+                
+                if (data.success && data.token) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    document.getElementById('token').value = data.token;
+                    alert('Login successful! Token saved.');
+                } else {
+                    alert('Login failed: ' + (data.message || 'Unknown error'));
+                }
+            } catch (error) {
+                document.getElementById('response').textContent = 'Error: ' + error.message;
+            }
+        }
+        
+        async function testToken() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('No token found. Please login first.');
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/payment/pricing', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+                alert('Token is valid!');
+            } catch (error) {
+                document.getElementById('response').textContent = 'Error: ' + error.message;
+                alert('Token test failed: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

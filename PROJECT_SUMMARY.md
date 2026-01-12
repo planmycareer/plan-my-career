@@ -76,7 +76,7 @@
 ✅ Auto-redirect to dashboard
 
 ### 🎨 **Design System**
-✅ Custom color palette (Primary: Indigo, Secondary: Green, Accent: Amber)
+✅ Custom color palette (Primary: blue, Secondary: Green, Accent: Amber)
 ✅ Inter font family
 ✅ Card-based UI with shadows
 ✅ Smooth hover transitions
@@ -229,7 +229,7 @@ npm run build
 ## 🎨 DESIGN TOKENS
 
 ### Colors
-- Primary: #4F46E5 (Indigo)
+- Primary: #4F46E5 (blue)
 - Secondary: #10B981 (Green)
 - Accent: #F59E0B (Amber)
 

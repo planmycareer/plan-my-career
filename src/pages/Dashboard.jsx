@@ -23,7 +23,7 @@ export default function Dashboard() {
   if (!user) return null
 
   return (
-    <div className="min-h-[80vh] bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12">
+    <div className="min-h-[80vh] bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Welcome Header */}
         <div className="mb-12">
@@ -58,7 +58,7 @@ export default function Dashboard() {
               <p className={testCompleted ? 'text-green-700' : 'text-blue-700'}>
                 {testCompleted
                   ? 'Your personalized career report is ready. View detailed insights and recommendations.'
-                  : 'Take our 10-minute AI-powered assessment to discover your ideal career path.'}
+                  : 'Take our  assessment to discover your ideal career path.'}
               </p>
             </div>
           </div>
@@ -71,7 +71,7 @@ export default function Dashboard() {
             to="/career-test"
             className="card hover:scale-105 transition-transform duration-300 group"
           >
-            <div className="w-14 h-14 bg-gradient-to-br from-primary to-indigo-600 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <div className="w-14 h-14 bg-gradient-to-br from-primary to-blue-600 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
@@ -211,7 +211,7 @@ export default function Dashboard() {
             <p className="text-gray-700">
               {testCompleted
                 ? 'Book a counselling session to discuss your report in detail and create an action plan for your career goals.'
-                : 'Set aside 10-15 minutes in a quiet environment to take the career test for best results.'}
+                : 'Sit aside 120 minutes in a quiet environment to take the career test for best results.'}
             </p>
           </div>
         </div>

@@ -36,7 +36,7 @@ export default function BookingCard({ type, price, features, isPopular, onSelect
         onClick={() => onSelect(type)}
         className={`w-full py-3 rounded-lg font-semibold transition-all duration-200 ${
           isPopular
-            ? 'bg-primary text-white hover:bg-indigo-700 shadow-md hover:shadow-lg'
+            ? 'bg-blue-800 text-white hover:bg-blue-900 shadow-md hover:shadow-lg'
             : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
         }`}
       >

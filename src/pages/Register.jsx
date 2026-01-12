@@ -115,13 +115,13 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-[80vh] flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl w-full">
         {/* Card */}
         <div className="card">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-primary to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-primary to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
               </svg>
@@ -263,11 +263,11 @@ export default function Register() {
               />
               <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
                 I agree to the{' '}
-                <a href="#" className="text-primary hover:text-indigo-700 font-medium">
+                <a href="#" className="text-primary hover:text-blue-700 font-medium">
                   Terms and Conditions
                 </a>
                 {' '}and{' '}
-                <a href="#" className="text-primary hover:text-indigo-700 font-medium">
+                <a href="#" className="text-primary hover:text-blue-700 font-medium">
                   Privacy Policy
                 </a>
               </label>
@@ -292,7 +292,7 @@ export default function Register() {
           {/* Login Link */}
           <p className="mt-6 text-center text-gray-600">
             Already have an account?{' '}
-            <Link to="/login" className="font-semibold text-primary hover:text-indigo-700">
+            <Link to="/login" className="font-semibold text-primary hover:text-blue-700">
               Sign in
             </Link>
           </p>

@@ -130,7 +130,7 @@ function CollegePredictor() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-50 to-purple-50 py-12 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
@@ -145,14 +145,14 @@ function CollegePredictor() {
         {/* Loading Access Check */}
         {accessLoading && (
           <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-12 text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
             <p className="text-gray-600">Checking access...</p>
           </div>
         )}
 
         {/* Paywall - No Access */}
         {!accessLoading && hasAccess && !hasAccess.hasAccess && (
-          <div className="max-w-2xl mx-auto bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-2xl p-12 text-white text-center">
+          <div className="max-w-2xl mx-auto bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-2xl p-12 text-white text-center">
             <div className="text-6xl mb-6">🔒</div>
             <h2 className="text-3xl font-bold mb-4">Premium Feature</h2>
             <p className="text-xl mb-6 opacity-90">
@@ -164,7 +164,7 @@ function CollegePredictor() {
             </div>
             <button
               onClick={() => navigate('/pricing')}
-              className="bg-white text-indigo-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors shadow-lg"
+              className="bg-white text-blue-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors shadow-lg"
             >
               Purchase Now →
             </button>

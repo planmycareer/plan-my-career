@@ -89,13 +89,13 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-[80vh] flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
         {/* Card */}
         <div className="card">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-primary to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-primary to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
@@ -157,7 +157,7 @@ export default function Login() {
                   Remember me
                 </label>
               </div>
-              <a href="#" className="text-sm font-medium text-primary hover:text-indigo-700">
+              <a href="#" className="text-sm font-medium text-primary hover:text-blue-700">
                 Forgot password?
               </a>
             </div>
@@ -188,7 +188,7 @@ export default function Login() {
           {/* Register Link */}
           <p className="mt-6 text-center text-gray-600">
             Don't have an account?{' '}
-            <Link to="/register" className="font-semibold text-primary hover:text-indigo-700">
+            <Link to="/register" className="font-semibold text-primary hover:text-blue-700">
               Sign up now
             </Link>
           </p>
