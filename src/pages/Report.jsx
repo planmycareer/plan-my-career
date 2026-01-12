@@ -89,7 +89,7 @@ export default function Report() {
     }
     
     const parsedReport = JSON.parse(reportData)
-    console.log('Report structure:', parsedReport)
+  if (import.meta.env.DEV) console.log('Report structure:', parsedReport)
     setReport(parsedReport)
   }, [navigate])
 

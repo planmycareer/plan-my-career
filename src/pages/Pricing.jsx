@@ -34,15 +34,18 @@ const Pricing = () => {
       return;
     }
 
-    console.log('Token found:', token ? 'Yes' : 'No');
-    console.log('Token preview:', token ? `${token.substring(0, 20)}...` : 'N/A');
+    // Avoid noisy logs in production
+    if (import.meta.env.DEV) {
+      console.log('Token found:', token ? 'Yes' : 'No');
+      console.log('Token preview:', token ? `${token.substring(0, 20)}...` : 'N/A');
+    }
 
     setSelectedService(service);
     setProcessing(true);
 
     try {
-      // Create payment order
-      console.log('Creating payment order for:', service.service);
+  // Create payment order
+  if (import.meta.env.DEV) console.log('Creating payment order for:', service.service);
       const response = await axios.post(
         API_ENDPOINTS.PAYMENT.CREATE_ORDER,
         { service: service.service },
@@ -51,8 +54,8 @@ const Pricing = () => {
         }
       );
 
-      const order = response.data.data;
-      console.log('Order created:', order);
+  const order = response.data.data;
+  if (import.meta.env.DEV) console.log('Order created:', order);
 
       // In production, integrate with Razorpay/Stripe
       // For now, simulate payment

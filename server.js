@@ -3,6 +3,12 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
 import bodyParser from 'body-parser'
+import helmet from 'helmet'
+import compression from 'compression'
+import rateLimit from 'express-rate-limit'
+import mongoSanitize from 'express-mongo-sanitize'
+import hpp from 'hpp'
+import morgan from 'morgan'
 import authRoutes from './server/routes/authRoutes.js'
 import testRoutes from './server/routes/testRoutes.js'
 import reportRoutes from './server/routes/reportRoutes.js'
@@ -21,18 +27,56 @@ const app = express()
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-// CORS Configuration - Allow frontend domains
-app.use(cors({
-  origin: [
-    'http://localhost:5173', // Local development
-    'http://localhost:5174', // Local development (alternative port)
-    'https://career-web-nk75.pages.dev', // Cloudflare Pages
-    /\.pages\.dev$/, // All Cloudflare Pages subdomains
-  ],
-  credentials: true
+const isProd = process.env.NODE_ENV === 'production'
+
+// Basic hardening
+app.disable('x-powered-by')
+app.use(helmet({
+  crossOriginResourcePolicy: false,
+}))
+app.use(hpp())
+app.use(mongoSanitize())
+app.use(compression())
+
+// Request logging (avoid noisy logs in test; keep prod logs actionable)
+app.use(morgan(isProd ? 'combined' : 'dev'))
+
+// Rate limiting (tune as needed)
+app.use(rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: isProd ? 200 : 1000,
+  standardHeaders: true,
+  legacyHeaders: false,
 }))
 
-app.use(bodyParser.json())
+// CORS Configuration - Allow frontend domains
+const envFrontendUrl = process.env.FRONTEND_URL
+const corsOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'https://career-web-nk75.pages.dev',
+  /\.pages\.dev$/,
+]
+if (envFrontendUrl) corsOrigins.unshift(envFrontendUrl)
+
+app.use(cors({
+  origin: corsOrigins,
+  credentials: true,
+}))
+
+// Body size limits to prevent abuse
+app.use(bodyParser.json({ limit: '1mb' }))
+app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }))
+
+// Simple request timeout guard
+app.use((req, res, next) => {
+  res.setTimeout(30_000, () => {
+    if (!res.headersSent) {
+      res.status(503).json({ success: false, message: 'Request timeout' })
+    }
+  })
+  next()
+})
 
 // Serve generated PDFs
 app.use('/pdfs', express.static(path.join(__dirname, 'uploads', 'pdfs')))

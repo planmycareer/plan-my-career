@@ -71,10 +71,10 @@ export default function Navbar() {
                   Dashboard
                 </Link>
                 <Link to="/career-test" className="text-gray-700 hover:text-primary transition-colors font-medium">
-                  Career Test
+                  Career Assessment Test (Phase 1)
                 </Link>
                 <Link to="/college-predictor" className="text-gray-700 hover:text-primary transition-colors font-medium">
-                  College Predictor
+                  College Predictor (Beta)
                 </Link>
                 <Link to="/book-session" className="text-gray-700 hover:text-primary transition-colors font-medium">
                   Book Session
@@ -129,10 +129,10 @@ export default function Navbar() {
                     Dashboard
                   </Link>
                   <Link to="/career-test" className="text-gray-700 hover:text-primary transition-colors font-medium">
-                    Career Test
+                    Career Assessment Test (Phase 1)
                   </Link>
                   <Link to="/college-predictor" className="text-gray-700 hover:text-primary transition-colors font-medium">
-                    College Predictor
+                    College Predictor (Beta)
                   </Link>
                   <Link to="/book-session" className="text-gray-700 hover:text-primary transition-colors font-medium">
                     Book Session

@@ -49,7 +49,7 @@ export default function CareerTest() {
       }
 
       const result = await response.json()
-      console.log('Access check response:', result)
+  if (import.meta.env.DEV) console.log('Access check response:', result)
       
       // The API returns { success: true, data: { hasAccess: true/false } }
       const hasAccessValue = result.data?.hasAccess || result.hasAccess || false
@@ -84,7 +84,7 @@ export default function CareerTest() {
       }
 
       const result = await response.json()
-      console.log('Fetched questions:', result.data.length)
+  if (import.meta.env.DEV) console.log('Fetched questions:', result.data.length)
       
       // Transform API questions to match the frontend format
       const transformedQuestions = result.data.map(q => ({
@@ -167,7 +167,7 @@ export default function CareerTest() {
       }
 
       const result = await response.json()
-      console.log('Test submitted:', result)
+  if (import.meta.env.DEV) console.log('Test submitted:', result)
 
       // Store report data
       localStorage.setItem('careerTestAnswers', JSON.stringify(finalAnswers))

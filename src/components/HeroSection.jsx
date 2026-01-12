@@ -14,7 +14,7 @@ export default function HeroSection() {
         <div className="text-center">
           {/* Badge */}
           <div className="inline-flex items-center px-6 py-4 bg-primary/10 rounded-full text-blue-900 font-medium text-2xl mb-8">
-           Career Counselling & Admission Guidance
+           Launch of Phase 1 Career Assessment Platform
           </div>
 
           {/* Main Heading */}
@@ -27,13 +27,13 @@ export default function HeroSection() {
 
           {/* Subheading */}
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Make informed career decisions with our Personalised Assessment, Expert Counselling, and Personalized Career Roadmaps Designed For Students.
+            Complete career profiling with aptitude testing, reports &amp; college prediction.
           </p>
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link to="/career-test" className="btn-blue-800 text-lg">
-              Take Career Test
+              Start Phase 1 Test
               <svg className="w-5 h-5 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>

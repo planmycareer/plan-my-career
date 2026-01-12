@@ -149,6 +149,21 @@ function CollegePredictor() {
           </p>
         </div>
 
+        {/* Disclaimer */}
+        <div className="max-w-5xl mx-auto mb-8">
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 px-6 py-4">
+            <div className="flex items-start gap-3">
+              <div className="text-2xl">⚠️</div>
+              <div>
+                <p className="font-semibold text-amber-900">Disclaimer</p>
+                <p className="text-amber-800 text-sm leading-relaxed">
+                    This predictor is based on historical JoSAA counselling data (Round 1–5) and is meant for guidance purposes only. Actual cutoffs may vary.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Loading Access Check */}
         {accessLoading && (
           <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-12 text-center">

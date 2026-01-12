@@ -10,6 +10,9 @@ import Report from './pages/Report'
 import BookSession from './pages/BookSession'
 import CollegePredictor from './pages/CollegePredictor'
 import Pricing from './pages/Pricing'
+import PrivacyPolicy from './pages/PrivacyPolicy'
+import Terms from './pages/Terms'
+import Disclaimer from './pages/Disclaimer'
 
 function App() {
   return (
@@ -26,6 +29,9 @@ function App() {
           <Route path="/book-session" element={<BookSession />} />
           <Route path="/college-predictor" element={<CollegePredictor />} />
           <Route path="/pricing" element={<Pricing />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/disclaimer" element={<Disclaimer />} />
         </Routes>
       </main>
       <Footer />

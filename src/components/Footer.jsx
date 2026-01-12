@@ -42,7 +42,12 @@ export default function Footer() {
               </li>
               <li>
                 <Link to="/career-test" className="text-gray-400 hover:text-white transition-colors">
-                  Career Test
+                  Career Assessment Test (Phase 1)
+                </Link>
+              </li>
+              <li>
+                <Link to="/college-predictor" className="text-gray-400 hover:text-white transition-colors">
+                  College Predictor (Beta)
                 </Link>
               </li>
               <li>
@@ -53,6 +58,21 @@ export default function Footer() {
               <li>
                 <Link to="/dashboard" className="text-gray-400 hover:text-white transition-colors">
                   Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link to="/privacy-policy" className="text-gray-400 hover:text-white transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms" className="text-gray-400 hover:text-white transition-colors">
+                  Terms & Conditions
+                </Link>
+              </li>
+              <li>
+                <Link to="/disclaimer" className="text-gray-400 hover:text-white transition-colors">
+                  Disclaimer
                 </Link>
               </li>
             </ul>
