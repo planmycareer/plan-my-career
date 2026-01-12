@@ -14,7 +14,7 @@ export default function HeroSection() {
         <div className="text-center">
           {/* Badge */}
           <div className="inline-flex items-center px-6 py-4 bg-primary/10 rounded-full text-blue-900 font-medium text-2xl mb-8">
-           Launch of Phase 1 Career Assessment Platform
+           Phase 1 Career Assessment Platform
           </div>
 
           {/* Main Heading */}
