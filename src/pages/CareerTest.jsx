@@ -400,9 +400,7 @@ export default function CareerTest() {
                   </div>
                 </div>
                 <div className="flex items-start">
-                  <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white mr-3 flex-shrink-0 mt-1">
-                    ✓
-                  </div>
+                 
                  
                 </div>
               </div>
