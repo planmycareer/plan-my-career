@@ -168,9 +168,9 @@ function CollegePredictor() {
             <div className="bg-white/20 rounded-xl p-6 mb-8">
               <div className="flex items-baseline justify-center gap-3 mb-2">
                 {hasAccess.originalPrice && Number(hasAccess.originalPrice) > Number(hasAccess.price) ? (
-                  <span className="text-lg opacity-80 line-through">1{hasAccess.originalPrice}</span>
+                  <span className="text-lg opacity-80 line-through">{hasAccess.originalPrice}</span>
                 ) : null}
-                <span className="text-2xl font-bold">1{hasAccess.price}</span>
+                <span className="text-2xl font-bold">{hasAccess.price}</span>
               </div>
               <p className="text-sm opacity-90">Valid for {hasAccess.validity ?? hasAccess.validityDays ?? 'N/A'} days</p>
             </div>
