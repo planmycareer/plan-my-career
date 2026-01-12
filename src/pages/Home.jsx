@@ -16,7 +16,7 @@ export default function Home() {
         {/* Background Logo Watermark */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <img 
-            src="logo1 jpg.jpg" 
+            src="/logo.jpg" 
             alt="Background Logo" 
             className="w-96 h-96 object-contain opacity-10"
           />
@@ -208,7 +208,7 @@ export default function Home() {
         {/* Background Logo Watermark */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <img 
-            src="logo1 jpg.jpg" 
+            src="/logo.jpg" 
             alt="Background Logo" 
             className="w-96 h-96 object-contain opacity-10"
           />
@@ -266,7 +266,7 @@ export default function Home() {
         {/* Background Logo Watermark */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <img 
-            src="logo1 jpg.jpg" 
+            src="/logo.jpg" 
             alt="Background Logo" 
             className="w-96 h-96 object-contain opacity-10"
           />
@@ -323,7 +323,7 @@ export default function Home() {
         {/* Background Logo Watermark */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <img 
-            src="logo1 jpg.jpg" 
+            src="/logo.jpg" 
             alt="Background Logo" 
             className="w-[600px] h-[600px] object-contain opacity-10"
           />

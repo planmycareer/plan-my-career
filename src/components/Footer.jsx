@@ -10,7 +10,7 @@ export default function Footer() {
           {/* Brand Section */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <img src="logo1 jpg.jpg" alt="Logo" className="w-16 h-16 object-contain" />
+              <img src="/logo.jpg" alt="Logo" className="w-16 h-16 object-contain" />
               <span className="text-xl font-bold">Plan My Career</span>
             </div>
             <p className="text-gray-400 mb-6 max-w-xl">
