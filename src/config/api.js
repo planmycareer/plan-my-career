@@ -4,7 +4,7 @@
 // Check if running on localhost
 const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
 // Prefer environment variable (Vercel/Vite) for the API base URL in production
-const API_BASE_URL = isLocalhost
+export const API_BASE_URL = isLocalhost
   ? 'http://localhost:5000/api'
   : (import.meta.env.VITE_API_URL || 'https://api.planmycareerindia.com/api')
 
@@ -53,4 +53,5 @@ export const API_ENDPOINTS = {
   },
 }
 
-export default API_BASE_URL
+// Keep existing imports working: default export the endpoints object
+export default API_ENDPOINTS
