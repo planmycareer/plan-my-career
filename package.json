@@ -16,6 +16,7 @@
     "seed:all": "node seedQuestions.js && node seedCutoffs.js"
   },
   "dependencies": {
+    "@vercel/analytics": "^1.6.1",
     "axios": "^1.13.2",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
