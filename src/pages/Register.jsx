@@ -81,7 +81,9 @@ export default function Register() {
     }
 
     // Call real backend API
-    try {
+    try { 
+      console.log("API BASE URL:", API);
+
   const response = await fetch(API_ENDPOINTS.AUTH.REGISTER, {
         method: 'POST',
         headers: {
