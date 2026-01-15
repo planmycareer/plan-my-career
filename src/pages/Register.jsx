@@ -8,8 +8,9 @@ export default function Register() {
     email: '',
     phone: '',
     grade: '',
-    password: '',
-    confirmPassword: '',
+  password: '',
+  confirmPassword: '',
+  terms: false,
   })
   const [errors, setErrors] = useState({})
   const navigate = useNavigate()
@@ -25,13 +26,14 @@ export default function Register() {
   }, [navigate])
 
   const handleChange = (e) => {
+    const { name, type, value, checked } = e.target
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: type === 'checkbox' ? checked : value,
     })
-    // Clear error when user starts typing
-    if (errors[e.target.name]) {
-      setErrors({ ...errors, [e.target.name]: '' })
+    // Clear error when user starts typing/interacting
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: '' })
     }
   }
 
@@ -66,6 +68,10 @@ export default function Register() {
 
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match'
+    }
+
+    if (!formData.terms) {
+      newErrors.terms = 'You must accept the terms and privacy policy'
     }
 
     return newErrors
@@ -260,8 +266,9 @@ export default function Register() {
                 id="terms"
                 name="terms"
                 type="checkbox"
+                checked={formData.terms}
+                onChange={handleChange}
                 className="h-4 w-4 mt-1 text-primary focus:ring-primary border-gray-300 rounded"
-                required
               />
               <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
                 I agree to the{' '}
@@ -274,6 +281,9 @@ export default function Register() {
                 </a>
               </label>
             </div>
+            {errors.terms && (
+              <p className="mt-2 text-sm text-red-600">{errors.terms}</p>
+            )}
 
             {/* Error Message */}
             {errors.submit && (
