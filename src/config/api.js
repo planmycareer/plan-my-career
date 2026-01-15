@@ -3,9 +3,10 @@
 
 // Check if running on localhost
 const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-const API_BASE_URL = isLocalhost 
-  ? 'http://localhost:5000/api' 
-  : (import.meta.env.VITE_API_URL || 'https://career-web-nk75.onrender.com/api')
+// Prefer environment variable (Vercel/Vite) for the API base URL in production
+const API_BASE_URL = isLocalhost
+  ? 'http://localhost:5000/api'
+  : (import.meta.env.VITE_API_URL || 'https://api.planmycareerindia.com/api')
 
 export const API_ENDPOINTS = {
   // Base URL

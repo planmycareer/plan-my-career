@@ -1,7 +1,9 @@
 // Test round-wise prediction differences
 import axios from 'axios';
 
-const API_URL = 'https://career-web-nk75.onrender.com/api/predictor/predict';
+// Use VITE_API_URL if set; otherwise fall back to production domain
+const BASE = (process.env.VITE_API_URL || 'https://api.planmycareerindia.com/api');
+const API_URL = `${BASE}/predictor/predict`;
 
 async function testRoundPredictions() {
   console.log('\n🎯 Testing Round-Wise Predictions\n');

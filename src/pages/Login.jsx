@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import API_ENDPOINTS from '../config/api'
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -59,7 +60,7 @@ export default function Login() {
 
     // Call real backend API
     try {
-      const response = await fetch('https://career-web-nk75.onrender.com/api/auth/login', {
+  const response = await fetch(API_ENDPOINTS.AUTH.LOGIN, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
