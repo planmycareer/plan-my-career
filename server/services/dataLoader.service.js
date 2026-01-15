@@ -5,9 +5,17 @@ import { sections } from '../data/sections.js';
 import { section1Questions } from '../data/section1/questions.js';
 import { section2Questions } from '../data/section2/questions.js';
 import { section3Questions } from '../data/section3/questions.js';
+import { section4Questions } from '../data/section4/questions.js';
+import { section5Questions } from '../data/section5/questions.js';
+import { section6Questions } from '../data/section6/questions.js';
+import { section7Questions } from '../data/section7/questions.js';
 import { section1Reports } from '../data/section1/reports.js';
 import { reports as section2Reports } from '../data/section2/reports.js';
 import { section3Reports } from '../data/section3/reports.js';
+import { section4Reports } from '../data/section4/reports.js';
+import { section5Reports } from '../data/section5/reports.js';
+import { section6Reports } from '../data/section6/reports.js';
+import { section7Reports } from '../data/section7/reports.js';
 
 // Cache for loaded data
 let questionsCache = null;
@@ -28,7 +36,10 @@ export function loadAllQuestions() {
     ...section1Questions,
     ...section2Questions,
     ...section3Questions,
-    // ...section4Questions,
+  ...section4Questions,
+  ...section5Questions,
+  ...section6Questions,
+  ...section7Questions,
     // ...section5Questions,
     // ...section6Questions,
     // ...section7Questions,
@@ -74,7 +85,10 @@ export function loadAllReports() {
     SECTION_1: section1Reports,
     SECTION_2: section2Reports,
     SECTION_3: section3Reports,
-    // SECTION_4: section4Reports,
+  SECTION_4: section4Reports,
+  SECTION_5: section5Reports,
+  SECTION_6: section6Reports,
+  SECTION_7: section7Reports,
     // SECTION_5: section5Reports,
     // SECTION_6: section6Reports,
     // SECTION_7: section7Reports,

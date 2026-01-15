@@ -110,18 +110,6 @@ const Pricing = () => {
   };
 
   const serviceInfo = {
-    'college-predictor': {
-      title: 'College Predictor',
-      description: 'Get accurate college predictions based on your JEE/NEET/CET rank',
-      features: [
-        'Predict colleges for JEE,NEET&CET',
-        'Filter by category, quota, state',
-        'Round-wise predictions',
-        'Gender-specific cutoffs',
-        'High/Medium/Dream categorization'
-      ],
-      icon: '🎓'
-    },
     'career-test': {
       title: 'Career Assessment Test',
       description: 'Comprehensive psychometric test to discover your ideal career path',
@@ -147,6 +135,20 @@ const Pricing = () => {
       ],
       icon: '👨‍🏫'
     },
+    'college-predictor': {
+      title: 'College Predictor',
+      description: 'Get accurate college predictions based on your JEE/NEET/CET rank',
+      features: [
+        'Predict colleges for JEE,NEET&CET',
+        'Filter by category, quota, state',
+        'Round-wise predictions',
+        'Gender-specific cutoffs',
+        'High/Medium/Dream categorization'
+      ],
+      icon: '🎓'
+    },
+    
+    
     'full-access': {
       title: 'Full Access Plan',
       description: 'Complete access to all services',
@@ -170,6 +172,16 @@ const Pricing = () => {
     );
   }
 
+  // Desired display order for plans
+  const desiredOrder = ['career-test', 'counselling-session', 'college-predictor', 'full-access'];
+  const orderedPricing = [];
+  desiredOrder.forEach((key) => {
+    const it = pricing.find((p) => p.service === key);
+    if (it) orderedPricing.push(it);
+  });
+  const remaining = pricing.filter((p) => !desiredOrder.includes(p.service));
+  const displayPricing = [...orderedPricing, ...remaining];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 py-12 px-4">
       <div className="max-w-7xl mx-auto">
@@ -179,7 +191,7 @@ const Pricing = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {pricing.map((item) => {
+          {displayPricing.map((item) => {
             const info = serviceInfo[item.service];
             return (
               <div
@@ -189,7 +201,7 @@ const Pricing = () => {
                 }`}
               >
                 {info.badge && (
-                  <div className="bg-blue-800 text-white text-sm font-bold px-4 py-1 rounded-full inline-block mb-4">
+                  <div className="bg-blue-900 text-white text-sm font-bold px-4 py-1 rounded-full inline-block mb-4">
                     {info.badge}
                   </div>
                 )}
@@ -225,8 +237,8 @@ const Pricing = () => {
                   disabled={processing && selectedService?.service === item.service}
                   className={`w-full py-3 rounded-lg font-semibold transition-colors ${
                     item.service === 'full-access'
-                      ? 'bg-blue-800 hover:bg-blue-900 text-white'
-                      : 'bg-blue-800 hover:bg-blue-900 text-white'
+                      ? 'bg-blue-900 hover:bg-blue-900 text-white'
+                      : 'bg-blue-900 hover:bg-blue-900 text-white'
                   } disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
                   {processing && selectedService?.service === item.service

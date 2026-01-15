@@ -24,13 +24,13 @@ export const sections = [
   },
   {
     id: 'SECTION_5',
-    name: 'Work Style Preferences',
-    subsections: ['INDEPENDENT', 'COLLABORATIVE', 'STRUCTURED', 'FLEXIBLE']
+  name: 'Academic Strengths',
+  subsections: ['MATHEMATICS', 'SCIENCE', 'LANGUAGE', 'SOCIAL_STUDIES']
   },
   {
     id: 'SECTION_6',
-    name: 'Career Motivation',
-    subsections: ['FINANCIAL', 'IMPACT', 'CREATIVITY', 'GROWTH']
+    name: 'Career Awareness',
+    subsections: ['TRADITIONAL', 'NEW_AGE', 'VOCATIONAL', 'DIPLOMA_VS_DEGREE']
   },
   {
     id: 'SECTION_7',

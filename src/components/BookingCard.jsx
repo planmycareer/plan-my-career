@@ -1,6 +1,6 @@
 export default function BookingCard({ type, price, features, isPopular, onSelect }) {
   return (
-    <div className={`relative card hover:scale-105 transition-transform duration-300 ${
+    <div className={`relative card hover:scale-105 transition-transform duration-300 h-full flex flex-col ${
       isPopular ? 'border-2 border-primary shadow-xl' : ''
     }`}>
       {/* Popular Badge */}
@@ -19,8 +19,8 @@ export default function BookingCard({ type, price, features, isPopular, onSelect
         <p className="text-gray-500 text-sm">per session</p>
       </div>
 
-      {/* Features */}
-      <ul className="space-y-3 mb-6">
+      {/* Features (grow to fill) */}
+      <ul className="space-y-3 mb-6 flex-1">
         {features.map((feature, index) => (
           <li key={index} className="flex items-start space-x-2">
             <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -36,7 +36,7 @@ export default function BookingCard({ type, price, features, isPopular, onSelect
         onClick={() => onSelect(type)}
         className={`w-full py-3 rounded-lg font-semibold transition-all duration-200 ${
           isPopular
-            ? 'bg-blue-800 text-white hover:bg-blue-900 shadow-md hover:shadow-lg'
+            ? 'bg-blue-900 text-white hover:bg-blue-900 shadow-md hover:shadow-lg'
             : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
         }`}
       >

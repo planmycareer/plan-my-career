@@ -1,7 +1,7 @@
 // Test round-wise prediction differences
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/predictor/predict';
+const API_URL = 'https://career-web-nk75.onrender.com/api/predictor/predict';
 
 async function testRoundPredictions() {
   console.log('\n🎯 Testing Round-Wise Predictions\n');

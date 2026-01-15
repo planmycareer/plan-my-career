@@ -17,17 +17,38 @@ export function calculateScores(answers) {
   const sectionScores = {};
   const detailedScores = {};
 
-  // Calculate scores for each question
+
+  // Special handling for Section 4 (Learning Style): count A/B/C answers
+  let section4OptionCounts = { A: 0, B: 0, C: 0 };
+
   allQuestions.forEach(question => {
     const { id, section, subsection, correctAnswer } = question;
     const userAnswer = answers[id];
 
-    // Initialize section and subsection if not exists
+    // Section 4: Learning Style (10 Qs, 3 options)
+    if (section === 'SECTION_4') {
+      // Option index: 0 = A, 1 = B, 2 = C
+      if (userAnswer === 0) section4OptionCounts.A++;
+      else if (userAnswer === 1) section4OptionCounts.B++;
+      else if (userAnswer === 2) section4OptionCounts.C++;
+
+      // Store for completeness (not used for scoring)
+      if (!subsectionScores[section]) subsectionScores[section] = {};
+      if (!subsectionScores[section][subsection]) {
+        subsectionScores[section][subsection] = { total: 0, score: 0 };
+        detailedScores[section] = detailedScores[section] || {};
+        detailedScores[section][subsection] = [];
+      }
+      subsectionScores[section][subsection].total += 1;
+      detailedScores[section][subsection].push({ questionId: id, userAnswer });
+      return;
+    }
+
+    // All other sections: original logic
     if (!subsectionScores[section]) {
       subsectionScores[section] = {};
       detailedScores[section] = {};
     }
-    
     if (!subsectionScores[section][subsection]) {
       subsectionScores[section][subsection] = {
         correct: 0,
@@ -36,30 +57,23 @@ export function calculateScores(answers) {
       };
       detailedScores[section][subsection] = [];
     }
-
-    // For objective questions (with correctAnswer)
     if (correctAnswer !== null && correctAnswer !== undefined) {
       subsectionScores[section][subsection].total += 1;
-      
       if (userAnswer === correctAnswer) {
         subsectionScores[section][subsection].correct += 1;
         subsectionScores[section][subsection].score += 1;
       }
-
       detailedScores[section][subsection].push({
         questionId: id,
         userAnswer,
         correctAnswer,
         isCorrect: userAnswer === correctAnswer
       });
-    }
-    // For subjective/interest-based questions (Likert scale)
-    else {
-      // Score based on answer value (0-4 for Strongly Disagree to Strongly Agree)
-      const score = userAnswer !== undefined ? userAnswer : 0;
+    } else {
+      // Likert scoring (A=+5, B=+4, C=+3, D=+2, E=+1)
+      const score = userAnswer !== undefined ? Math.max(0, 5 - Number(userAnswer)) : 0;
       subsectionScores[section][subsection].total += 1;
       subsectionScores[section][subsection].score += score;
-
       detailedScores[section][subsection].push({
         questionId: id,
         userAnswer,
@@ -68,36 +82,81 @@ export function calculateScores(answers) {
     }
   });
 
+
   // Calculate section-level best subsections
   const bestSubsections = {};
-  
+
   sections.forEach(section => {
     const sectionId = section.id;
     const subsections = section.subsections;
-    
-    let maxScore = -1;
-    let bestSubsection = null;
 
+    // Section 4: pick dominant option (A/B/C)
+    if (sectionId === 'SECTION_4') {
+      // Find max count
+      const max = Math.max(section4OptionCounts.A, section4OptionCounts.B, section4OptionCounts.C);
+      let best = null;
+      if (max === 0) {
+        best = null;
+      } else if (
+        section4OptionCounts.A === max &&
+        section4OptionCounts.A !== section4OptionCounts.B &&
+        section4OptionCounts.A !== section4OptionCounts.C
+      ) {
+        best = 'VISUAL';
+      } else if (
+        section4OptionCounts.B === max &&
+        section4OptionCounts.B !== section4OptionCounts.A &&
+        section4OptionCounts.B !== section4OptionCounts.C
+      ) {
+        best = 'AUDITORY';
+      } else if (
+        section4OptionCounts.C === max &&
+        section4OptionCounts.C !== section4OptionCounts.A &&
+        section4OptionCounts.C !== section4OptionCounts.B
+      ) {
+        best = 'PRACTICAL';
+      } else {
+        // Tie: show MIXED (or default to VISUAL)
+        best = 'VISUAL';
+      }
+      bestSubsections[sectionId] = best;
+      sectionScores[sectionId] = {
+        subsections: subsectionScores[sectionId] || {},
+        bestSubsection: best,
+        maxScore: max
+      };
+      return;
+    }
+
+    // All other sections: compute percentage per subsection and pick the highest
+    let maxPercentage = -1;
+    let bestSubsection = null;
+    const subsectionData = subsectionScores[sectionId] || {};
     subsections.forEach(subsectionId => {
-      if (subsectionScores[sectionId] && subsectionScores[sectionId][subsectionId]) {
-        const score = subsectionScores[sectionId][subsectionId].score;
-        
-        if (score > maxScore) {
-          maxScore = score;
+      const data = subsectionData[subsectionId];
+      if (data) {
+        // For sections where 'score' was accumulated as points (Likert), treat score/total
+        const total = data.total || 0;
+        const score = data.score || data.correct || 0;
+        const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
+        // attach percentage to data for downstream use
+        subsectionData[subsectionId].percentage = percentage;
+        if (percentage > maxPercentage) {
+          maxPercentage = percentage;
           bestSubsection = subsectionId;
         }
+      } else {
+        // Ensure subsection exists with zero values
+        subsectionData[subsectionId] = { total: 0, score: 0, percentage: 0 };
       }
     });
-
     if (bestSubsection) {
       bestSubsections[sectionId] = bestSubsection;
     }
-
-    // Store section summary
     sectionScores[sectionId] = {
-      subsections: subsectionScores[sectionId] || {},
+      subsections: subsectionData,
       bestSubsection,
-      maxScore
+      maxPercentage
     };
   });
 

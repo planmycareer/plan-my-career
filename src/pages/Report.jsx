@@ -253,7 +253,7 @@ export default function Report() {
           {report.reportSummary?.topCareerRecommendations && report.reportSummary.topCareerRecommendations.length > 0 && (
             <div className="card mb-8">
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-800 to-purple-600 rounded-lg flex items-center justify-center mr-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-900 to-purple-600 rounded-lg flex items-center justify-center mr-4">
                   <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clipRule="evenodd" />
                     <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z" />
@@ -267,7 +267,7 @@ export default function Report() {
                     <h3 className="text-lg font-bold text-gray-900 mb-2">{career.title}</h3>
                     <p className="text-gray-600 text-sm mb-3">{career.description}</p>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-blue-800 font-semibold">Growth: {career.growthPotential}</span>
+                      <span className="text-blue-900 font-semibold">Growth: {career.growthPotential}</span>
                       <span className="text-purple-800 font-semibold">{career.averageSalary}</span>
                     </div>
                     {career.source && (
@@ -292,13 +292,13 @@ export default function Report() {
                   <div>
                     <h3 className="text-2xl font-bold text-gray-900">{sectionData.sectionName}</h3>
                     <div className="flex items-center gap-3 mt-2">
-                      <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-semibold rounded-full">
+                      <span className="px-3 py-1 bg-blue-100 text-blue-900 text-sm font-semibold rounded-full">
                         {sectionData.bestSubsection}
                       </span>
                       {sectionData.performanceLevel && (
                         <span className={`px-3 py-1 text-sm font-semibold rounded-full ${
                           sectionData.performanceLevel === 'Excellent' ? 'bg-green-100 text-green-800' :
-                          sectionData.performanceLevel === 'Good' ? 'bg-blue-100 text-blue-800' :
+                          sectionData.performanceLevel === 'Good' ? 'bg-blue-100 text-blue-900' :
                           sectionData.performanceLevel === 'Average' ? 'bg-yellow-100 text-yellow-800' :
                           'bg-gray-100 text-gray-800'
                         }`}>
@@ -308,7 +308,7 @@ export default function Report() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-4xl font-bold text-blue-800">{sectionData.percentage?.toFixed(0) || 0}%</div>
+                    <div className="text-4xl font-bold text-blue-900">{sectionData.percentage?.toFixed(0) || 0}%</div>
                     <div className="text-sm text-gray-600">{sectionData.score}/{sectionData.totalQuestions} correct</div>
                   </div>
                 </div>
@@ -350,7 +350,7 @@ export default function Report() {
                               <h5 className="font-bold text-gray-900 mb-1">{career.title}</h5>
                               <p className="text-gray-700 text-sm mb-2">{career.description}</p>
                               <div className="flex items-center gap-4 text-sm">
-                                <span className="text-blue-800 font-semibold">
+                                <span className="text-blue-900 font-semibold">
                                   📈 Growth: {career.growthPotential}
                                 </span>
                                 <span className="text-purple-800 font-semibold">
@@ -370,7 +370,7 @@ export default function Report() {
                         <ul className="space-y-2">
                           {sectionData.report.recommendations.map((rec, idx) => (
                             <li key={idx} className="flex items-start space-x-2">
-                              <span className="text-blue-800 font-bold">•</span>
+                              <span className="text-blue-900 font-bold">•</span>
                               <span className="text-gray-700">{rec}</span>
                             </li>
                           ))}
@@ -399,14 +399,14 @@ export default function Report() {
           </div>
 
           {/* CTA Section */}
-          <div className="mt-12 bg-gradient-to-r from-blue-800 to-purple-600 rounded-2xl p-8 text-center text-white">
+          <div className="mt-12 bg-gradient-to-r from-blue-900 to-purple-600 rounded-2xl p-8 text-center text-white">
             <h3 className="text-3xl font-bold mb-4">Ready to Take the Next Step?</h3>
             <p className="text-xl mb-6 text-blue-100">
               Book a one-on-one counselling session with our expert career counsellors
             </p>
             <Link
               to="/book-session"
-              className="inline-block px-8 py-4 bg-white text-blue-800 font-bold rounded-full hover:bg-gray-100 transition-all shadow-lg"
+              className="inline-block px-8 py-4 bg-white text-blue-900 font-bold rounded-full hover:bg-gray-100 transition-all shadow-lg"
             >
               Schedule Your Counselling Session
             </Link>

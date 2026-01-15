@@ -89,19 +89,23 @@ export default function BookSession() {
             <span className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center mr-3 text-lg">1</span>
             Choose Session Type
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-stretch">
             {sessionPackages.map((pkg) => (
               <div
                 key={pkg.id}
-                className={`transition-all ${selectedPackage === pkg.type ? 'ring-4 ring-primary' : ''}`}
+                className={`transition-all h-full min-h-80 ${selectedPackage === pkg.type ? 'ring-4 ring-primary' : ''}`}
               >
-                <BookingCard
-                  type={pkg.type}
-                  price={pkg.price}
-                  features={pkg.features}
-                  isPopular={pkg.isPopular}
-                  onSelect={handlePackageSelect}
-                />
+                <div className="h-full flex flex-col">
+                  <div className="flex-1">
+                    <BookingCard
+                      type={pkg.type}
+                      price={pkg.price}
+                      features={pkg.features}
+                      isPopular={pkg.isPopular}
+                      onSelect={handlePackageSelect}
+                    />
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -264,7 +268,7 @@ export default function BookSession() {
               </svg>
               <div>
                 <h3 className="font-semibold text-blue-900 mb-1">What to Expect?</h3>
-                <ul className="text-blue-800 space-y-1 text-sm">
+                <ul className="text-blue-900 space-y-1 text-sm">
                   <li>• Detailed discussion of your career assessment report</li>
                   <li>• Personalized stream and course recommendations</li>
                   <li>• College selection guidance and entrance exam preparation tips</li>

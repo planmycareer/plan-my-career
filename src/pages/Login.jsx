@@ -180,7 +180,7 @@ export default function Login() {
 
           {/* Demo Hint */}
           <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm text-blue-800">
+            <p className="text-sm text-blue-900">
               <strong>Demo Mode:</strong> Use any email and password (min 6 chars) to login
             </p>
           </div>

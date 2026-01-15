@@ -191,7 +191,7 @@ function CollegePredictor() {
             </div>
             <button
               onClick={() => navigate('/pricing')}
-              className="bg-white text-blue-800 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors shadow-lg"
+              className="bg-white text-blue-900 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors shadow-lg"
             >
               Purchase Now →
             </button>

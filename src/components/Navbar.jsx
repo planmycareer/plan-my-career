@@ -57,7 +57,7 @@ export default function Navbar() {
             <div className="w-20 h-20 bg-gradient-to-br from-white to-white-600 rounded-lg flex items-center justify-center">
               <img src="/logo.jpg" alt="Logo" className="w-18 h-16 object-contain" />
             </div>
-            <span className="text-xl font-bold text-gray-900 hidden sm:block" style={{ fontFamily: "'Geometr415 Blk BT Black', sans-serif" }}>PlanMyCareer</span>
+            <span className="text-xl font-bold text-blue-950 hidden sm:block" style={{ fontFamily: "'Geometr415 Blk BT Black', sans-serif" }}>PlanMyCareer</span>
           </Link>
 
           {/* Desktop Menu */}

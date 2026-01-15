@@ -37,16 +37,48 @@ export function generateCompleteReport(scoringResults) {
     }
 
     try {
-      // Load the report for the best subsection
+      // Section 4: Learning Style (VISUAL/AUDITORY/PRACTICAL)
+      if (sectionId === 'SECTION_4') {
+        const subsectionReport = loadSubsectionReport(sectionId, bestSubsection);
+        sectionReports[sectionId] = {
+          sectionId,
+          sectionName: section.name,
+          bestSubsection,
+          report: subsectionReport
+        };
+        reportSummary.completedSections += 1;
+        return;
+      }
+
+      // Section 7: short Likert (5 qs). Determine report by total points across subsection
+      if (sectionId === 'SECTION_7') {
+        const scores = subsectionScores[sectionId] || {};
+        // SECTION_7 uses subsection 'GENERAL'
+        const data = scores['GENERAL'] || { score: 0, total: 0 };
+        // data.score contains accumulated points (Likert converted)
+        const totalPoints = data.score || 0;
+        const reportKey = totalPoints >= 16 && totalPoints <= 25 ? 'HIGH' : 'LOW';
+        const subsectionReport = loadSubsectionReport(sectionId, reportKey);
+        sectionReports[sectionId] = {
+          sectionId,
+          sectionName: section.name,
+          bestSubsection: reportKey,
+          score: data.score,
+          totalQuestions: data.total,
+          percentage: calculatePercentage(data),
+          report: subsectionReport
+        };
+        reportSummary.completedSections += 1;
+        return;
+      }
+
+      // All other sections: original logic
       const subsectionReport = loadSubsectionReport(sectionId, bestSubsection);
-      
-      // Get subsection scores
       const scores = subsectionScores[sectionId] || {};
       const bestSubsectionScore = scores[bestSubsection] || { score: 0, total: 1 };
       const percentage = calculatePercentage(bestSubsectionScore);
       const performanceLevel = getPerformanceLevel(percentage);
 
-      // Build section report
       sectionReports[sectionId] = {
         sectionId,
         sectionName: section.name,
@@ -60,13 +92,9 @@ export function generateCompleteReport(scoringResults) {
       };
 
       reportSummary.completedSections += 1;
-      
-      // Collect overall strengths
       if (subsectionReport.strengths) {
         reportSummary.overallStrengths.push(...subsectionReport.strengths.slice(0, 2));
       }
-
-      // Collect career recommendations
       if (subsectionReport.careerPaths) {
         reportSummary.topCareerRecommendations.push(
           ...subsectionReport.careerPaths.slice(0, 2).map(career => ({
@@ -75,7 +103,6 @@ export function generateCompleteReport(scoringResults) {
           }))
         );
       }
-
     } catch (error) {
       console.error(`Error loading report for ${sectionId}:`, error.message);
       sectionReports[sectionId] = {
@@ -107,6 +134,24 @@ export function generateCompleteReport(scoringResults) {
  */
 export function generateSectionReport(sectionId, scoringResults) {
   const { subsectionScores, bestSubsections } = scoringResults;
+  // Special handling for SECTION_7
+  if (sectionId === 'SECTION_7') {
+    const scores = subsectionScores[sectionId] || {};
+    const data = scores['GENERAL'] || { score: 0, total: 0 };
+    const totalPoints = data.score || 0;
+    const reportKey = totalPoints >= 16 && totalPoints <= 25 ? 'HIGH' : 'LOW';
+    const subsectionReport = loadSubsectionReport(sectionId, reportKey);
+    return {
+      sectionId,
+      bestSubsection: reportKey,
+      score: data.score,
+      totalQuestions: data.total,
+      percentage: calculatePercentage(data),
+      subsectionScores: scores,
+      report: subsectionReport
+    };
+  }
+
   const bestSubsection = bestSubsections[sectionId];
 
   if (!bestSubsection) {

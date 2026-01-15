@@ -337,7 +337,7 @@ export default function CareerTest() {
                   setSelectedOption('')
                   setTestStarted(true)
                 }}
-                className="inline-block px-10 py-4 bg-gradient-to-r from-blue-800 to-blue-800 text-white font-bold text-lg rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                className="inline-block px-10 py-4 bg-gradient-to-r from-blue-900 to-blue-900 text-white font-bold text-lg rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
               >
                 Start Test →
               </button>
@@ -409,7 +409,7 @@ export default function CareerTest() {
             <div className="space-y-4">
               <Link
                 to="/pricing"
-                className="inline-block px-10 py-4 bg-gradient-to-r from-blue-800 to-blue-800 text-white font-bold text-lg rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                className="inline-block px-10 py-4 bg-gradient-to-r from-blue-900 to-blue-900 text-white font-bold text-lg rounded-full hover:from-blue-900 hover:to-blue-900 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
               >
                 View Pricing & Purchase
               </Link>
@@ -420,7 +420,7 @@ export default function CareerTest() {
                     setLoading(true)
                     checkServiceAccess()
                   }}
-                  className="text-blue-600 hover:text-blue-800 font-semibold underline"
+                  className="text-blue-600 hover:text-blue-900 font-semibold underline"
                 >
                   Click here to check access again
                 </button>
@@ -474,7 +474,7 @@ export default function CareerTest() {
 
         {/* Section Badge */}
         <div className="mb-6 flex flex-wrap gap-2">
-          <span className="inline-block px-4 py-2 bg-blue-800/10 text-blue-800 font-semibold rounded-full text-sm">
+          <span className="inline-block px-4 py-2 bg-blue-900/10 text-blue-900 font-semibold rounded-full text-sm">
             {currentQ.section}
           </span>
           {currentQ.subsection && (

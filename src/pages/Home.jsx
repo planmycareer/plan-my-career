@@ -28,9 +28,9 @@ export default function Home() {
           </div>
 
           {/* Description Box */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 mb-16 border-l-4 border-blue-600">
+          <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 mb-16 border-l-4 border-blue-950">
             <p className="text-xl text-gray-700 leading-relaxed">
-              PlanMyCareer is a professional Career Counselling and Admission Guidance Center dedicated to helping students after 10<sup>TH</sup> and 12<sup>TH</sup> make the right Academic and Career Decisions.
+              PlanMyCareer is a professional Career Counselling and Admission Guidance Center dedicated to helping students after 10<sup>th</sup> and 12<sup>th</sup> make the right Academic and Career Decisions.
             </p>
             <p className="text-xl text-gray-700 leading-relaxed mt-4">
               We understand that confusion, peer pressure, and lack of proper information often lead students to choose the wrong career path. Our goal is to eliminate this confusion by providing Expert Counselling, Aptitude-based Analysis, and Step-by-Step Admission Support.
@@ -73,7 +73,7 @@ export default function Home() {
 
             {/* Right: Key Stats */}
             <div className="space-y-12">
-              <div className="bg-gradient-to-br from-blue-800 to-blue-800 rounded-2xl shadow-2xl p-8 text-white">
+              <div className="bg-gradient-to-br from-blue-950 to-blue-950 rounded-2xl shadow-2xl p-8 text-white">
                 <h3 className="text-2xl font-bold mb-6">Why Choose Us?</h3>
                 <div className="space-y-12">
                   <div className="flex items-start">
@@ -107,7 +107,7 @@ export default function Home() {
                   <div className="flex items-start">
                     <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
                       ✓
-                    </div>
+                    </div>  
                     <div>
                       <h4 className="font-semibold mb-1">Round-wise Predictions</h4>
                       <p className="text-sm opacity-90">Track college cutoffs across multiple counseling rounds</p>
@@ -146,7 +146,7 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link 
                   to="/career-test" 
-                  className="group px-8 py-4 bg-gradient-to-r from-blue-800 to-blue-900 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-blue-900 hover:to-blue-950 transition-all duration-300 text-center transform hover:-translate-y-1"
+                  className="group px-8 py-4 bg-gradient-to-r from-blue-950 to-blue-950 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-center transform hover:-translate-y-1"
                 >
                   <div className="flex items-center justify-center gap-2">
                     <span>Book Career Test</span>
@@ -155,7 +155,7 @@ export default function Home() {
                 </Link>
                 <Link 
                   to="/book-session" 
-                  className="group px-8 py-4 bg-gradient-to-r from-blue-800 to-blue-900 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-blue-900 hover:to-blue-950 transition-all duration-300 text-center transform hover:-translate-y-1"
+                  className="group px-8 py-4 bg-gradient-to-r from-blue-950 to-blue-950 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl  transition-all duration-300 text-center transform hover:-translate-y-1"
                 >
                   <div className="flex items-center justify-center gap-2">
                     <span>Book Counselling</span>
@@ -171,28 +171,28 @@ export default function Home() {
             <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">Our Core Values</h3>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               <div className="text-center">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 shadow-lg">
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-400 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 shadow-lg">
                   🎓
                 </div>
                 <h4 className="font-bold text-lg text-gray-900 mb-2">Excellence</h4>
                 <p className="text-gray-600 text-sm">Committed to delivering the highest quality guidance and insights</p>
               </div>
               <div className="text-center">
-                <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 shadow-lg">
+                <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-green-400 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 shadow-lg">
                   🤝
                 </div>
                 <h4 className="font-bold text-lg text-gray-900 mb-2">Trust</h4>
                 <p className="text-gray-600 text-sm">Building relationships based on transparency and reliability</p>
               </div>
               <div className="text-center">
-                <div className="w-20 h-20 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 shadow-lg">
+                <div className="w-20 h-20 bg-gradient-to-br from-purple-400 to-purple-400 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 shadow-lg">
                   💡
                 </div>
                 <h4 className="font-bold text-lg text-gray-900 mb-2">Innovation</h4>
                 <p className="text-gray-600 text-sm">Leveraging technology to revolutionize career counseling</p>
               </div>
               <div className="text-center">
-                <div className="w-20 h-20 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 shadow-lg">
+                <div className="w-20 h-20 bg-gradient-to-br from-pink-400 to-pink-400 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 shadow-lg">
                   ❤️
                 </div>
                 <h4 className="font-bold text-lg text-gray-900 mb-2">Empathy</h4>
@@ -242,7 +242,7 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link 
                   to="/career-test" 
-                  className="group px-8 py-4 bg-gradient-to-r from-blue-800 to-blue-900 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-blue-900 hover:to-blue-950 transition-all duration-300 text-center transform hover:-translate-y-1"
+                  className="group px-8 py-4 bg-gradient-to-r from-blue-950 to-blue-950 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl  transition-all duration-300 text-center transform hover:-translate-y-1"
                 >
                   <div className="flex items-center justify-center gap-2">
                     <span>Book Career Test</span>
@@ -251,7 +251,7 @@ export default function Home() {
                 </Link>
                 <Link 
                   to="/book-session" 
-                  className="group px-8 py-4 bg-gradient-to-r from-blue-800 to-blue-900 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-blue-900 hover:to-blue-950 transition-all duration-300 text-center transform hover:-translate-y-1"
+                  className="group px-8 py-4 bg-gradient-to-r from-blue-950 to-blue-950 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-blue-950 hover:to-blue-950 transition-all duration-300 text-center transform hover:-translate-y-1"
                 >
                   <div className="flex items-center justify-center gap-2">
                     <span>Book Counselling</span>
@@ -310,7 +310,7 @@ export default function Home() {
           <div className="text-center mt-16">
             <Link 
               to="/book-session" 
-              className="inline-block px-12 py-5 bg-gradient-to-r from-blue-800 to-blue-800 text-white font-bold text-lg rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              className="inline-block px-12 py-5 bg-gradient-to-r from-blue-950 to-blue-950 text-white font-bold text-lg rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
               Start Your Journey Today →
             </Link>
@@ -416,7 +416,7 @@ export default function Home() {
           </div>
 
           {/* Our Promise */}
-          <div className="bg-gradient-to-r from-blue-800 to-blue-800 rounded-3xl shadow-2xl p-12 text-center text-white">
+          <div className="bg-gradient-to-r from-blue-950 to-blue-950 rounded-3xl shadow-2xl p-12 text-center text-white">
             <div className="text-6xl mb-6">🎯</div>
             <h3 className="text-3xl font-bold mb-4">Our Promise</h3>
             <p className="text-xl leading-relaxed max-w-3xl mx-auto">
@@ -435,7 +435,7 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link 
                   to="/career-test" 
-                  className="group px-8 py-4 bg-gradient-to-r from-blue-800 to-blue-900 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-blue-900 hover:to-blue-950 transition-all duration-300 text-center transform hover:-translate-y-1"
+                  className="group px-8 py-4 bg-gradient-to-r from-blue-950 to-blue-950 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl  transition-all duration-300 text-center transform hover:-translate-y-1"
                 >
                   <div className="flex items-center justify-center gap-2">
                     <span>Book Career Test</span>
@@ -444,7 +444,7 @@ export default function Home() {
                 </Link>
                 <Link 
                   to="/book-session" 
-                  className="group px-8 py-4 bg-gradient-to-r from-blue-800 to-blue-900 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-blue-900 hover:to-blue-950 transition-all duration-300 text-center transform hover:-translate-y-1"
+                  className="group px-8 py-4 bg-gradient-to-r from-blue-950 to-blue-950 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-center transform hover:-translate-y-1"
                 >
                   <div className="flex items-center justify-center gap-2">
                     <span>Book Counselling</span>
@@ -487,17 +487,17 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-800 to-blue-800">
+      <section className="py-20 bg-gradient-to-r from-blue-950 to-blue-950">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold text-white mb-6">Ready to Discover Your Perfect Career?</h2>
           <p className="text-xl text-blue-200 mb-8">
             Take the first step towards your dream career with our AI-powered assessment
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/career-test" className="group px-8 py-4 bg-white text-blue-800 font-semibold rounded-xl shadow-lg hover:shadow-xl hover:bg-gray-50 transition-all duration-300 text-center transform hover:-translate-y-1">
+            <Link to="/career-test" className="group px-8 py-4 bg-white text-blue-900 font-semibold rounded-xl shadow-lg hover:shadow-xl hover:bg-gray-50 transition-all duration-300 text-center transform hover:-translate-y-1">
               Take The Career Test
             </Link>
-            <Link to="/book-session" className="group px-8 py-4 bg-white text-blue-800 font-semibold rounded-xl shadow-lg hover:shadow-xl hover:bg-gray-50 transition-all duration-300 text-center transform hover:-translate-y-1">
+            <Link to="/book-session" className="group px-8 py-4 bg-white text-blue-900 font-semibold rounded-xl shadow-lg hover:shadow-xl hover:bg-gray-50 transition-all duration-300 text-center transform hover:-translate-y-1">
               Book Counselling Session
             </Link>
           </div>

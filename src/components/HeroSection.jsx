@@ -14,14 +14,14 @@ export default function HeroSection() {
         <div className="text-center">
           {/* Badge */}
           <div className="inline-flex items-center px-6 py-4 bg-primary/10 rounded-full text-blue-900 font-medium text-2xl mb-8">
-           Phase 1 Career Assessment Platform
+            Career Assessment Platform
           </div>
 
           {/* Main Heading */}
           <h1 className="text-5xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
             Helping Students Choose Right Career & College<br />
             <span className="t text-4xl bg-clip-text bg-gradient-to-r text-blue-900">
-             After 10<sup>TH</sup> & 12<sup>TH</sup> | CET / NEET / JEE | CAP Rounds
+             After 10<sup>th</sup> & 12<sup>th</sup> | CET / NEET / JEE | CAP Rounds
             </span>
           </h1>
 
@@ -32,7 +32,7 @@ export default function HeroSection() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link to="/career-test" className="btn-blue-800 text-lg">
+            <Link to="/career-test" className="btn-blue-900 text-lg">
               Start Phase 1 Test
               <svg className="w-5 h-5 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
