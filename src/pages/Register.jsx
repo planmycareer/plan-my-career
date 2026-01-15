@@ -78,7 +78,8 @@ export default function Register() {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+  e.preventDefault()
+  console.debug('Register: handleSubmit called', formData)
     
     const newErrors = validateForm()
     if (Object.keys(newErrors).length > 0) {
@@ -118,7 +119,8 @@ export default function Register() {
       // Redirect to dashboard
       navigate('/dashboard')
     } catch (error) {
-      setErrors({ submit: 'Network error. Please check your connection.' })
+      console.error('Register: submit error', error)
+      setErrors({ submit: error?.message || 'Network error. Please check your connection.' })
     }
   }
 
