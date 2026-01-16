@@ -40,10 +40,10 @@ export const API_ENDPOINTS = {
     PREDICT: `${API_BASE_URL}/predictor/predict`,
   },
   
-  // Booking endpoints
+  // Booking endpoints (match backend: /api/booking)
   BOOKING: {
-    CREATE: `${API_BASE_URL}/bookings`,
-    MY_BOOKINGS: `${API_BASE_URL}/bookings/my-bookings`,
+    CREATE: `${API_BASE_URL}/booking`,
+    MY_BOOKINGS: `${API_BASE_URL}/booking/my`,
   },
   
   // Dashboard endpoints

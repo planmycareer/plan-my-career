@@ -56,22 +56,52 @@ export default function BookSession() {
     })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     if (!selectedPackage || !selectedTime) {
       alert('Please select a package and time slot')
       return
     }
 
-    // Show success modal
-    setShowModal(true)
+    try {
+      const token = localStorage.getItem('token')
+      if (!token) {
+        navigate('/login')
+        return
+      }
 
-    // Reset after 3 seconds
-    setTimeout(() => {
-      setShowModal(false)
-      navigate('/dashboard')
-    }, 3000)
+      const payload = {
+        date: selectedDate,
+        time: selectedTime.time,
+        mode: 'online',
+        package: selectedPackage,
+      }
+
+      const res = await fetch(API_ENDPOINTS.BOOKING.CREATE, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      })
+
+      const data = await res.json()
+      if (!res.ok) throw new Error(data?.message || 'Booking failed')
+
+      // Show success modal
+      setShowModal(true)
+
+      // Reset after 3 seconds
+      setTimeout(() => {
+        setShowModal(false)
+        navigate('/dashboard')
+      }, 3000)
+    } catch (err) {
+      console.error('Booking error:', err)
+      alert(err.message || 'Unable to create booking')
+    }
   }
 
   return (
