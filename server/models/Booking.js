@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 
 const bookingSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  package: { type: String, required: true, enum: ['Basic', 'Premium', 'Career Roadmap'] },
+  package: { type: String, required: true, enum: ['Basic', 'Premium', 'Career Roadmap'], default: 'Basic' },
   date: { type: String, required: true },
   time: { type: String, required: true },
   mode: { type: String, enum: ['online', 'offline'], default: 'online' },
