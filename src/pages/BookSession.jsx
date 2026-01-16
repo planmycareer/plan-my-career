@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BookingCard from '../components/BookingCard'
+import API_ENDPOINTS from '../config/api'
 import { sessionPackages, timeSlots } from '../data/services'
 
 export default function BookSession() {
