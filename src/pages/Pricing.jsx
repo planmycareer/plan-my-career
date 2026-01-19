@@ -65,7 +65,7 @@ const Pricing = () => {
 
       if (confirmPayment) {
         // Simulate payment verification
-        await axios.post(
+        const verifyResponse = await axios.post(
           API_ENDPOINTS.PAYMENT.VERIFY,
           {
             orderId: order.orderId,
@@ -77,11 +77,44 @@ const Pricing = () => {
           }
         );
 
+        if (import.meta.env.DEV) {
+          console.log('Verify response:', verifyResponse?.data)
+        }
+
         alert(`✅ Payment successful! You now have access to ${service.service}`);
+
+        // Help the destination page avoid redirecting back to pricing immediately
+        // while the backend updates/propagates payment state.
+        if (service.service === 'college-predictor') {
+          localStorage.setItem('justPaid:college-predictor', String(Date.now()))
+        }
         
         // Redirect based on service
         if (service.service === 'college-predictor') {
+          // Always navigate to the product page after verify.
+          // CollegePredictor.jsx will run the access check and (with the grace window) won't loop back immediately.
           navigate('/college-predictor');
+
+          // Fire-and-forget diagnostic re-check (useful for debugging deployments)
+          ;(async () => {
+            try {
+              for (let attempt = 1; attempt <= 5; attempt++) {
+                const accessRes = await axios.get(
+                  API_ENDPOINTS.PAYMENT.CHECK_ACCESS('college-predictor'),
+                  { headers: { Authorization: `Bearer ${token}` } }
+                )
+
+                if (import.meta.env.DEV) {
+                  console.log('Post-verify access check:', accessRes?.data)
+                }
+
+                if (accessRes?.data?.hasAccess) break
+                await new Promise((r) => setTimeout(r, 500 * attempt))
+              }
+            } catch (e) {
+              console.error('Post-verify access re-check failed:', e?.response?.data || e?.message || e)
+            }
+          })()
         } else if (service.service === 'career-test') {
           navigate('/career-test');
         } else if (service.service === 'counselling-session') {

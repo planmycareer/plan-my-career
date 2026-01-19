@@ -13,7 +13,8 @@
     "setup": "node setup.js",
     "seed:questions": "node seedQuestions.js",
     "seed:cutoffs": "node seedCutoffs.js",
-    "seed:all": "node seedQuestions.js && node seedCutoffs.js"
+    "seed:all": "node seedQuestions.js && node seedCutoffs.js",
+    "import:jee:2024": "node scripts/importJeeRounds2024.js"
   },
   "dependencies": {
     "@vercel/analytics": "^1.6.1",

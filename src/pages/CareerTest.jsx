@@ -171,15 +171,22 @@ export default function CareerTest() {
 
       // Store report data
       localStorage.setItem('careerTestAnswers', JSON.stringify(finalAnswers))
-      localStorage.setItem('careerReport', JSON.stringify(result.data.report))
-      // Persist latest test id separately (report payload doesn't include Report _id)
-      if (result.data.testId) {
-        localStorage.setItem('testId', result.data.testId)
-      }
-      localStorage.setItem('testId', result.data.testId)
+      const submittedTestId = result?.data?.testId
+      const submittedReport = result?.data?.report
 
-      // Redirect to report page
-      navigate('/report')
+      if (submittedReport && typeof submittedReport === 'object') {
+        localStorage.setItem('careerReport', JSON.stringify(submittedReport))
+      } else {
+        // Ensure we don't leave invalid JSON (e.g. "undefined") in storage
+        localStorage.removeItem('careerReport')
+      }
+
+      if (submittedTestId) {
+        localStorage.setItem('testId', submittedTestId)
+      }
+
+      // Redirect to report page (include testId so report can be fetched even if localStorage is missing)
+      navigate(submittedTestId ? `/report?testId=${encodeURIComponent(submittedTestId)}` : '/report')
     } catch (error) {
       console.error('Error submitting test:', error)
       alert('Failed to submit test: ' + error.message)

@@ -1,11 +1,17 @@
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import API_BASE_URL from '../config/api'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { API_BASE_URL } from '../config/api'
 
 export default function Report() {
   const [report, setReport] = useState(null)
   const [user, setUser] = useState(null)
+  const [status, setStatus] = useState({ loading: true, error: '' })
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+
+  const asString = (val) => (typeof val === 'string' ? val : '')
+  const asStringArray = (val) => (Array.isArray(val) ? val.filter((x) => typeof x === 'string') : [])
+  const asObjectArray = (val) => (Array.isArray(val) ? val.filter((x) => x && typeof x === 'object') : [])
 
   const getAuthToken = () => {
     // Some builds may store token under different keys; try the common ones.
@@ -49,49 +55,107 @@ export default function Report() {
   }
 
   useEffect(() => {
-    // Check if user is logged in
-    const userData = localStorage.getItem('user')
-    if (!userData) {
-      navigate('/login')
-      return
-    }
-    setUser(JSON.parse(userData))
+    let cancelled = false
 
-    // Get report from localStorage
-    const reportData = localStorage.getItem('careerReport')
-    if (!reportData) {
-      // If not present locally, try fetching latest test report (no need to re-take)
-      const token = getAuthToken()
-      if (!token) {
-        navigate('/dashboard')
+    const boot = async () => {
+      setStatus({ loading: true, error: '' })
+
+      // Check if user is logged in
+      const userData = localStorage.getItem('user')
+      if (!userData) {
+        navigate('/login')
+        return
+      }
+      try {
+        const parsedUser = JSON.parse(userData)
+        if (!cancelled) setUser(parsedUser)
+      } catch {
+        // Corrupted user storage; force re-login
+        localStorage.removeItem('user')
+        localStorage.removeItem('token')
+        navigate('/login')
         return
       }
 
-      ;(async () => {
+      const token = getAuthToken()
+      if (!token) {
+        if (!cancelled) setStatus({ loading: false, error: 'Login required. Please login again.' })
+        return
+      }
+
+      // If a testId is provided (from redirect after submit), fetch that exact test report.
+      const testId = searchParams.get('testId')
+      if (testId) {
         try {
-          const res = await fetch(`${API_BASE_URL}/test/report`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+          const res = await fetch(`${API_BASE_URL}/test/${encodeURIComponent(testId)}`, {
+            headers: { Authorization: `Bearer ${token}` },
           })
           const data = await res.json().catch(() => ({}))
-          if (!res.ok || !data?.data?.report) {
-            navigate('/dashboard')
+          const backendReport = data?.data?.report
+          if (!res.ok || !backendReport) {
+            throw new Error(data?.message || 'Failed to load report for this test')
+          }
+          if (!cancelled) {
+            localStorage.setItem('careerReport', JSON.stringify(backendReport))
+            setReport(backendReport)
+            setStatus({ loading: false, error: '' })
+          }
+          return
+        } catch (e) {
+          if (!cancelled) {
+            setReport(null)
+            setStatus({ loading: false, error: e?.message || 'Failed to load report' })
+          }
+          return
+        }
+      }
+
+      // Try localStorage first.
+      const reportData = localStorage.getItem('careerReport')
+      if (reportData) {
+        try {
+          const parsedReport = JSON.parse(reportData)
+          if (parsedReport && typeof parsedReport === 'object') {
+            if (import.meta.env.DEV) console.log('Report structure:', parsedReport)
+            if (!cancelled) {
+              setReport(parsedReport)
+              setStatus({ loading: false, error: '' })
+            }
             return
           }
-          localStorage.setItem('careerReport', JSON.stringify(data.data.report))
-          setReport(data.data.report)
         } catch {
-          navigate('/dashboard')
+          // Fall through to backend fetch.
         }
-      })()
-      return
+      }
+
+      // Fallback: fetch latest test report.
+      try {
+        const res = await fetch(`${API_BASE_URL}/test/report`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        const data = await res.json().catch(() => ({}))
+        const backendReport = data?.data?.report
+        if (!res.ok || !backendReport) {
+          throw new Error(data?.message || 'No report found yet. Please complete the test.' )
+        }
+        if (!cancelled) {
+          localStorage.setItem('careerReport', JSON.stringify(backendReport))
+          setReport(backendReport)
+          setStatus({ loading: false, error: '' })
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setReport(null)
+          setStatus({ loading: false, error: e?.message || 'Failed to load report' })
+        }
+      }
     }
-    
-    const parsedReport = JSON.parse(reportData)
-  if (import.meta.env.DEV) console.log('Report structure:', parsedReport)
-    setReport(parsedReport)
-  }, [navigate])
+
+    boot()
+    return () => {
+      cancelled = true
+    }
+  }, [navigate, searchParams])
 
   // Dev helper: paste the report JSON into the browser console:
   // window.__setCareerReport(<paste-json-here>)
@@ -161,7 +225,32 @@ export default function Report() {
   const handleDownloadPDF = () => fetchPdf()
   const handleDownloadSectionPDF = (section) => fetchPdf(section)
 
-  if (!report) return null
+  if (status.loading) {
+    return (
+      <div className="min-h-[70vh] flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        <div className="bg-white rounded-2xl shadow-xl p-8 text-center max-w-md w-full">
+          <div className="animate-spin rounded-full h-14 w-14 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-700 font-semibold">Loading your report…</p>
+          <p className="text-gray-500 text-sm mt-2">This may take a few seconds.</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!report) {
+    return (
+      <div className="min-h-[70vh] flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        <div className="bg-white rounded-2xl shadow-xl p-8 text-center max-w-xl w-full">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Report not available</h1>
+          <p className="text-gray-600 mb-6">{status.error || 'We could not load your report. Please try again.'}</p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link to="/career-test" className="btn-primary">Retake Test</Link>
+            <button type="button" className="btn-secondary" onClick={() => navigate('/dashboard')}>Go to Dashboard</button>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   // Handle both old and new report formats
   const isNewFormat = report.sectionReports && report.reportSummary
@@ -226,7 +315,7 @@ export default function Report() {
           </div>
 
           {/* Overall Strengths Summary */}
-          {report.reportSummary?.overallStrengths && report.reportSummary.overallStrengths.length > 0 && (
+          {Array.isArray(report.reportSummary?.overallStrengths) && report.reportSummary.overallStrengths.length > 0 && (
             <div className="card mb-6">
               <div className="flex items-center mb-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center mr-4">
@@ -237,7 +326,7 @@ export default function Report() {
                 <h2 className="text-2xl font-bold text-gray-900">Your Top Strengths</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {report.reportSummary.overallStrengths.map((strength, index) => (
+                {asStringArray(report.reportSummary.overallStrengths).map((strength, index) => (
                   <div key={index} className="flex items-center space-x-3 bg-green-50 p-4 rounded-lg border border-green-200">
                     <svg className="w-6 h-6 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -250,7 +339,7 @@ export default function Report() {
           )}
 
           {/* Top Career Recommendations */}
-          {report.reportSummary?.topCareerRecommendations && report.reportSummary.topCareerRecommendations.length > 0 && (
+          {Array.isArray(report.reportSummary?.topCareerRecommendations) && report.reportSummary.topCareerRecommendations.length > 0 && (
             <div className="card mb-8">
               <div className="flex items-center mb-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-900 to-purple-600 rounded-lg flex items-center justify-center mr-4">
@@ -262,7 +351,7 @@ export default function Report() {
                 <h2 className="text-2xl font-bold text-gray-900">Top Career Recommendations</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {report.reportSummary.topCareerRecommendations.map((career, index) => (
+                {asObjectArray(report.reportSummary.topCareerRecommendations).map((career, index) => (
                   <div key={index} className="bg-gradient-to-br from-blue-50 to-purple-50 p-6 rounded-xl border border-blue-200">
                     <h3 className="text-lg font-bold text-gray-900 mb-2">{career.title}</h3>
                     <p className="text-gray-600 text-sm mb-3">{career.description}</p>
@@ -324,28 +413,34 @@ export default function Report() {
                     )}
 
                     {/* Strengths */}
-                    {sectionData.report.strengths && sectionData.report.strengths.length > 0 && (
+                    {(Array.isArray(sectionData.report.strengths) ? sectionData.report.strengths.length > 0 : Boolean(sectionData.report.strengths)) && (
                       <div className="mb-6">
                         <h4 className="font-bold text-gray-900 mb-3">Key Strengths</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          {sectionData.report.strengths.map((strength, idx) => (
-                            <div key={idx} className="flex items-start space-x-2 bg-green-50 p-3 rounded-lg">
-                              <svg className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                              </svg>
-                              <span className="text-gray-800">{strength}</span>
-                            </div>
-                          ))}
-                        </div>
+                        {Array.isArray(sectionData.report.strengths) ? (
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {asStringArray(sectionData.report.strengths).map((strength, idx) => (
+                              <div key={idx} className="flex items-start space-x-2 bg-green-50 p-3 rounded-lg">
+                                <svg className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                                <span className="text-gray-800">{strength}</span>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <p className="text-gray-800 whitespace-pre-wrap leading-relaxed">{asString(sectionData.report.strengths)}</p>
+                          </div>
+                        )}
                       </div>
                     )}
 
                     {/* Career Paths */}
-                    {sectionData.report.careerPaths && sectionData.report.careerPaths.length > 0 && (
+                    {Array.isArray(sectionData.report.careerPaths) && sectionData.report.careerPaths.length > 0 && (
                       <div className="mb-6">
                         <h4 className="font-bold text-gray-900 mb-3">Recommended Career Paths</h4>
                         <div className="space-y-3">
-                          {sectionData.report.careerPaths.map((career, idx) => (
+                          {asObjectArray(sectionData.report.careerPaths).map((career, idx) => (
                             <div key={idx} className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                               <h5 className="font-bold text-gray-900 mb-1">{career.title}</h5>
                               <p className="text-gray-700 text-sm mb-2">{career.description}</p>
@@ -364,32 +459,44 @@ export default function Report() {
                     )}
 
                     {/* Recommendations */}
-                    {sectionData.report.recommendations && sectionData.report.recommendations.length > 0 && (
+                    {(Array.isArray(sectionData.report.recommendations) ? sectionData.report.recommendations.length > 0 : Boolean(sectionData.report.recommendations)) && (
                       <div className="mb-6">
                         <h4 className="font-bold text-gray-900 mb-3">Recommendations</h4>
-                        <ul className="space-y-2">
-                          {sectionData.report.recommendations.map((rec, idx) => (
-                            <li key={idx} className="flex items-start space-x-2">
-                              <span className="text-blue-900 font-bold">•</span>
-                              <span className="text-gray-700">{rec}</span>
-                            </li>
-                          ))}
-                        </ul>
+                        {Array.isArray(sectionData.report.recommendations) ? (
+                          <ul className="space-y-2">
+                            {asStringArray(sectionData.report.recommendations).map((rec, idx) => (
+                              <li key={idx} className="flex items-start space-x-2">
+                                <span className="text-blue-900 font-bold">•</span>
+                                <span className="text-gray-700">{rec}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <p className="text-gray-800 whitespace-pre-wrap leading-relaxed">{asString(sectionData.report.recommendations)}</p>
+                          </div>
+                        )}
                       </div>
                     )}
 
                     {/* Development Areas */}
-                    {sectionData.report.developmentAreas && sectionData.report.developmentAreas.length > 0 && (
+                    {(Array.isArray(sectionData.report.developmentAreas) ? sectionData.report.developmentAreas.length > 0 : Boolean(sectionData.report.developmentAreas)) && (
                       <div>
                         <h4 className="font-bold text-gray-900 mb-3">Areas for Development</h4>
-                        <ul className="space-y-2">
-                          {sectionData.report.developmentAreas.map((area, idx) => (
-                            <li key={idx} className="flex items-start space-x-2 text-gray-700">
-                              <span className="text-orange-600 font-bold">→</span>
-                              <span>{area}</span>
-                            </li>
-                          ))}
-                        </ul>
+                        {Array.isArray(sectionData.report.developmentAreas) ? (
+                          <ul className="space-y-2">
+                            {asStringArray(sectionData.report.developmentAreas).map((area, idx) => (
+                              <li key={idx} className="flex items-start space-x-2 text-gray-700">
+                                <span className="text-orange-600 font-bold">→</span>
+                                <span>{area}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                            <p className="text-gray-800 whitespace-pre-wrap leading-relaxed">{asString(sectionData.report.developmentAreas)}</p>
+                          </div>
+                        )}
                       </div>
                     )}
                   </>

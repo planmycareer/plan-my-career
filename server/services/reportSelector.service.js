@@ -92,10 +92,10 @@ export function generateCompleteReport(scoringResults) {
       };
 
       reportSummary.completedSections += 1;
-      if (subsectionReport.strengths) {
+      if (Array.isArray(subsectionReport.strengths)) {
         reportSummary.overallStrengths.push(...subsectionReport.strengths.slice(0, 2));
       }
-      if (subsectionReport.careerPaths) {
+      if (Array.isArray(subsectionReport.careerPaths)) {
         reportSummary.topCareerRecommendations.push(
           ...subsectionReport.careerPaths.slice(0, 2).map(career => ({
             ...career,

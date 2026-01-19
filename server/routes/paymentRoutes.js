@@ -1,7 +1,7 @@
 import express from 'express'
 import { body } from 'express-validator'
 import { validateRequest } from '../middleware/validateRequest.js'
-import { auth } from '../middleware/authMiddleware.js'
+import { auth, verifyJWT } from '../middleware/authMiddleware.js'
 import { requireAdmin } from '../middleware/paymentMiddleware.js'
 import * as paymentController from '../controllers/paymentController.js'
 
@@ -26,7 +26,7 @@ router.post('/verify', [
 ], validateRequest, paymentController.verifyPayment)
 
 // Check access to specific service
-router.get('/check-access/:service', paymentController.checkServiceAccess)
+router.get('/check-access/:service', verifyJWT, paymentController.checkServiceAccess)
 
 // Get user's payment history
 router.get('/history', paymentController.getPaymentHistory)

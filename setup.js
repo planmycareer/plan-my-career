@@ -7,7 +7,7 @@ import mongoose from 'mongoose'
 
 dotenv.config()
 
-const MONGO_URI = process.env.MONGO_URI
+const MONGO_URI = process.env.MONGODB_URI || process.env.MONGO_URI
 
 console.log('🔍 Checking MongoDB Atlas Connection...\n')
 

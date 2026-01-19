@@ -17,3 +17,6 @@ export const auth = async (req, res, next) => {
     return res.status(401).json({ message: 'Unauthorized', error: err.message })
   }
 }
+
+// Export a verification-named alias for clarity in route definitions
+export const verifyJWT = auth

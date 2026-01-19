@@ -89,6 +89,17 @@ export async function verifyPayment(orderId, transactionId, paymentDetails) {
   if (payment.service === 'full-access') {
     user.purchasedServices.push('college-predictor', 'career-test', 'counselling-session')
   }
+
+  // Also maintain a `services` array on user for backward compatibility with external expectations
+  if (!user.services) {
+    user.services = []
+  }
+  if (!user.services.includes(payment.service)) {
+    user.services.push(payment.service)
+  }
+  if (payment.service === 'full-access') {
+    user.services.push('college-predictor', 'career-test', 'counselling-session')
+  }
   
   await user.save()
 

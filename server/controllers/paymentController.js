@@ -45,10 +45,12 @@ export async function checkServiceAccess(req, res, next) {
 
     const access = await paymentService.checkAccess(userId, service)
 
-    res.json({
-      success: true,
-      data: access
-    })
+  // Access checks are user-specific and time sensitive; never cache.
+  // This prevents CDNs/browsers from returning 304 and breaking client-side parsing.
+  res.set('Cache-Control', 'no-store')
+
+    // Return concise object as { hasAccess: true/false, ... }
+    res.json(access)
   } catch (error) {
     next(error)
   }

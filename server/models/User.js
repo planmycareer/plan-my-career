@@ -13,6 +13,10 @@ const userSchema = new mongoose.Schema({
     type: String, 
     enum: ['college-predictor', 'career-test', 'counselling-session', 'full-access'] 
   }], // Track which services user has purchased
+  services: [{
+    type: String,
+    enum: ['college-predictor', 'career-test', 'counselling-session', 'full-access']
+  }],
   isActive: { type: Boolean, default: true },
   lastLogin: { type: Date },
   createdAt: { type: Date, default: Date.now },

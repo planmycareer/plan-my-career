@@ -19,38 +19,137 @@ function CollegePredictor() {
   const [hasAccess, setHasAccess] = useState(null)
   const [accessLoading, setAccessLoading] = useState(true)
 
+  // After completing payment, Pricing.jsx navigates here immediately.
+  // Give the backend a short propagation window before hard-redirecting back to /pricing.
+  const postPaymentGraceMs = 15000
+
   // Check authentication and payment access on mount
   useEffect(() => {
     const token = localStorage.getItem('token')
     const user = localStorage.getItem('user')
     
     if (!token || !user) {
-      setError('Please login to use the college predictor')
-      setAccessLoading(false)
-      const timer = setTimeout(() => navigate('/login'), 2000)
-      return () => clearTimeout(timer)
+      // Not authenticated - redirect to login immediately
+      navigate('/login')
+      return
     }
 
     // Check if user has paid for this service
     checkServiceAccess(token)
   }, [navigate])
 
+  const sleep = (ms) => new Promise(res => setTimeout(res, ms))
+
   const checkServiceAccess = async (token) => {
     try {
-  const response = await fetch(API_ENDPOINTS.PAYMENT.CHECK_ACCESS('college-predictor'), {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      const data = await response.json()
+      setAccessLoading(true)
+      setError('')
 
-  if (!response.ok) {
-    throw new Error(data?.message || 'Failed to check access')
-  }
+  // If the user just came from pricing/payment, avoid instant redirect loops.
+  // We mark this in localStorage from Pricing.jsx.
+  const paidAtRaw = localStorage.getItem('justPaid:college-predictor')
+  const paidAt = paidAtRaw ? Number(paidAtRaw) : 0
+  const inGraceWindow = paidAt && (Date.now() - paidAt) < postPaymentGraceMs
 
-  setHasAccess(data.data)
-      setAccessLoading(false)
+      const maxAttempts = 3
+      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        const response = await fetch(API_ENDPOINTS.PAYMENT.CHECK_ACCESS('college-predictor'), {
+          headers: { Authorization: `Bearer ${token}` },
+          cache: 'no-store'
+        })
+
+        // Handle auth errors explicitly
+        if (response.status === 401) {
+          // Token expired or invalid
+          localStorage.clear()
+          navigate('/login')
+          return
+        }
+
+        // Some CDNs/browsers might return 304 for cached responses.
+        // With cache disabled above, this should be rare, but guard anyway.
+        if (response.status === 304) {
+          // retry once with a cache-busting URL
+          const bustUrl = `${API_ENDPOINTS.PAYMENT.CHECK_ACCESS('college-predictor')}?t=${Date.now()}`
+          const retry = await fetch(bustUrl, {
+            headers: { Authorization: `Bearer ${token}` },
+            cache: 'no-store'
+          })
+
+          if (retry.status === 401) {
+            localStorage.clear()
+            navigate('/login')
+            return
+          }
+
+          const retryDataRaw = await retry.json()
+          const retryData = retryDataRaw?.data && typeof retryDataRaw?.data === 'object' ? retryDataRaw.data : retryDataRaw
+          if (!retry.ok) {
+            throw new Error(retryDataRaw?.message || retryData?.message || 'Failed to check access')
+          }
+
+          if (retryData.hasAccess) {
+            setHasAccess(retryData)
+            localStorage.removeItem('justPaid:college-predictor')
+            return
+          }
+
+          // treat as no access and continue loop
+          if (attempt < maxAttempts) {
+            await sleep(1000 * attempt)
+            continue
+          }
+
+          if (inGraceWindow) {
+            setError('Payment received. Finalizing access… please wait a few seconds and retry.')
+            setHasAccess({ hasAccess: false })
+            return
+          }
+
+          navigate('/pricing')
+          return
+        }
+
+  const data = await response.json()
+  // Backend responses can be either:
+  // 1) { hasAccess: true/false, ... }
+  // 2) { success: true, data: { hasAccess: true/false, ... } }
+  const accessData = data?.data && typeof data?.data === 'object' ? data.data : data
+
+        if (!response.ok) {
+          throw new Error(data?.message || accessData?.message || 'Failed to check access')
+        }
+
+        // If access granted, set and return
+        if (accessData?.hasAccess) {
+          setHasAccess(accessData)
+          // Clear the post-payment flag once access is confirmed.
+          localStorage.removeItem('justPaid:college-predictor')
+          return
+        }
+
+        // Not granted yet - if we still have attempts left, wait briefly and retry (handles small propagation delays)
+        if (attempt < maxAttempts) {
+          // subtle backoff
+          await sleep(1000 * attempt)
+          continue
+        }
+
+        // Final attempt failed - redirect to pricing
+        // If we just paid, don't bounce immediately; show a message and keep checking.
+        if (inGraceWindow) {
+          setError('Payment received. Finalizing access… please wait a few seconds and retry.')
+          setHasAccess({ hasAccess: false })
+          return
+        }
+
+        navigate('/pricing')
+        return
+      }
     } catch (error) {
       console.error('Error checking access:', error)
-  setError(error?.message || 'Unable to check access. Please try again.')
+      setError(error?.message || 'Unable to check access. Please try again.')
+    } finally {
       setAccessLoading(false)
     }
   }
@@ -131,6 +230,8 @@ function CollegePredictor() {
       category: 'General',
       state: '',
       quota: 'AI',
+      round: '1',
+      gender: 'Gender-Neutral',
     })
     setResults(null)
     setError('')
@@ -172,35 +273,6 @@ function CollegePredictor() {
           </div>
         )}
 
-        {/* Paywall - No Access */}
-        {!accessLoading && hasAccess && !hasAccess.hasAccess && (
-          <div className="max-w-2xl mx-auto bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-2xl p-12 text-white text-center">
-            <div className="text-6xl mb-6">🔒</div>
-            <h2 className="text-3xl font-bold mb-4">Premium Feature</h2>
-            <p className="text-xl mb-6 opacity-90">
-              College Predictor is a premium service. Get accurate predictions for your college admissions!
-            </p>
-            <div className="bg-white/20 rounded-xl p-6 mb-8">
-              <div className="flex items-baseline justify-center gap-3 mb-2">
-                {hasAccess.originalPrice && Number(hasAccess.originalPrice) > Number(hasAccess.price) ? (
-                  <span className="text-lg opacity-80 line-through">{hasAccess.originalPrice}</span>
-                ) : null}
-                <span className="text-2xl font-bold">{hasAccess.price}</span>
-              </div>
-              <p className="text-sm opacity-90">Valid for {hasAccess.validity ?? hasAccess.validityDays ?? 'N/A'} days</p>
-            </div>
-            <button
-              onClick={() => navigate('/pricing')}
-              className="bg-white text-blue-900 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors shadow-lg"
-            >
-              Purchase Now →
-            </button>
-            <p className="mt-6 text-sm opacity-75">
-              ✓ JEE & NEET predictions • ✓ Round-wise cutoffs • ✓ Gender-specific data
-            </p>
-          </div>
-        )}
-
         {/* Access Granted - Show Predictor */}
         {!accessLoading && hasAccess && hasAccess.hasAccess && (
           <>
@@ -220,343 +292,364 @@ function CollegePredictor() {
             </div>
 
             {/* Predictor Form */}
-        <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8 mb-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Exam Selection */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Entrance Exam *
-              </label>
-              <select
-                name="exam"
-                value={formData.exam}
-                onChange={handleChange}
-                className="input-field"
-                required
-              >
-                <option value="JEE">JEE (Engineering)</option>
-                <option value="NEET">NEET (Medical)</option>
-              </select>
-            </div>
-
-            {/* Rank Input */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Your Rank *
-              </label>
-              <input
-                type="number"
-                name="rank"
-                value={formData.rank}
-                onChange={handleChange}
-                placeholder="Enter your rank (e.g., 5000)"
-                className="input-field"
-                required
-                min="1"
-              />
-            </div>
-
-            {/* Category */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Category *
-              </label>
-              <select
-                name="category"
-                value={formData.category}
-                onChange={handleChange}
-                className="input-field"
-                required
-              >
-                <option value="General">General</option>
-                <option value="OBC">OBC (Non-Creamy Layer)</option>
-                <option value="SC">SC (Scheduled Caste)</option>
-                <option value="ST">ST (Scheduled Tribe)</option>
-                <option value="EWS">EWS (Economically Weaker Section)</option>
-              </select>
-            </div>
-
-            {/* State */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Home State (Optional)
-              </label>
-              <input
-                type="text"
-                name="state"
-                value={formData.state}
-                onChange={handleChange}
-                placeholder="e.g., Delhi, Maharashtra"
-                className="input-field"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Required for state quota predictions
-              </p>
-            </div>
-
-            {/* Quota */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Quota
-              </label>
-              <select
-                name="quota"
-                value={formData.quota}
-                onChange={handleChange}
-                className="input-field"
-              >
-                <option value="AI">All India (AI)</option>
-                <option value="HS">Home State (HS)</option>
-                <option value="OS">Other State (OS)</option>
-                <option value="GO">Goa (GO)</option>
-                <option value="JK">Jammu & Kashmir (JK)</option>
-                <option value="LA">Ladakh (LA)</option>
-              </select>
-            </div>
-
-            {/* Round */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Counselling Round
-              </label>
-              <select
-                name="round"
-                value={formData.round}
-                onChange={handleChange}
-                className="input-field"
-              >
-                <option value="1">Round 1</option>
-                <option value="2">Round 2</option>
-                <option value="3">Round 3</option>
-                <option value="4">Round 4</option>
-                <option value="5">Round 5</option>
-                <option value="6">Round 6 (Final)</option>
-              </select>
-            </div>
-
-            {/* Gender */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Gender Preference
-              </label>
-              <select
-                name="gender"
-                value={formData.gender}
-                onChange={handleChange}
-                className="input-field"
-              >
-                <option value="Gender-Neutral">Gender-Neutral</option>
-                <option value="Female-only">Female-only</option>
-              </select>
-            </div>
-
-            {/* Error Message */}
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                ⚠️ {error}
-              </div>
-            )}
-
-            {/* Submit Button */}
-            <div className="flex gap-4">
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? '🔍 Predicting...' : '🎯 Predict My Colleges'}
-              </button>
-              {results && (
-                <button
-                  type="button"
-                  onClick={handleReset}
-                  className="btn-secondary"
-                >
-                  🔄 Reset
-                </button>
-              )}
-            </div>
-          </form>
-        </div>
-
-        {/* Results Section */}
-        {results && (
-          <div className="max-w-6xl mx-auto">
-            {/* Summary */}
-            <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                📊 Prediction Summary
-              </h2>
-              <div className="grid md:grid-cols-4 gap-4">
-                <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl">
-                  <p className="text-sm text-green-700 font-semibold">Your Rank</p>
-                  <p className="text-2xl font-bold text-green-900">{results.rank}</p>
+            <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8 mb-8">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Exam Selection */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Entrance Exam *
+                  </label>
+                  <select
+                    name="exam"
+                    value={formData.exam}
+                    onChange={handleChange}
+                    className="input-field"
+                    required
+                  >
+                    <option value="JEE">JEE (Engineering)</option>
+                    <option value="NEET">NEET (Medical)</option>
+                  </select>
                 </div>
-                <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl">
-                  <p className="text-sm text-blue-700 font-semibold">Category</p>
-                  <p className="text-2xl font-bold text-blue-900">{results.category}</p>
-                </div>
-                <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl">
-                  <p className="text-sm text-purple-700 font-semibold">State</p>
-                  <p className="text-2xl font-bold text-purple-900">{results.state || 'All India'}</p>
-                </div>
-                <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-xl">
-                  <p className="text-sm text-orange-700 font-semibold">Analyzed</p>
-                  <p className="text-2xl font-bold text-orange-900">{results.totalCollegesAnalyzed}</p>
-                </div>
-              </div>
-            </div>
 
-            {/* High Chance Colleges */}
-            {results.highChance && results.highChance.length > 0 && (
-              <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="text-3xl">🎯</span>
-                  <h3 className="text-2xl font-bold text-green-700">
-                    High Chance ({results.highChance.length})
-                  </h3>
+                {/* Rank Input */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Your Rank *
+                  </label>
+                  <input
+                    type="number"
+                    name="rank"
+                    value={formData.rank}
+                    onChange={handleChange}
+                    placeholder="Enter your rank (e.g., 5000)"
+                    className="input-field"
+                    required
+                    min="1"
+                  />
                 </div>
-                <p className="text-gray-600 mb-6">
-                  You have a <strong>strong probability</strong> of getting admission in these colleges based on previous year cutoffs.
-                </p>
-                <div className="space-y-4">
-                  {results.highChance.map((college, idx) => (
-                    <div
-                      key={idx}
-                      className="border border-green-200 bg-green-50 rounded-xl p-5 hover:shadow-lg transition-all"
+
+                {/* Category */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Category *
+                  </label>
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    className="input-field"
+                    required
+                  >
+                    <option value="General">General</option>
+                    <option value="OBC">OBC (Non-Creamy Layer)</option>
+                    <option value="SC">SC (Scheduled Caste)</option>
+                    <option value="ST">ST (Scheduled Tribe)</option>
+                    <option value="EWS">EWS (Economically Weaker Section)</option>
+                  </select>
+                </div>
+
+                {/* State */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Home State (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    name="state"
+                    value={formData.state}
+                    onChange={handleChange}
+                    placeholder="e.g., Delhi, Maharashtra"
+                    className="input-field"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Required for state quota predictions
+                  </p>
+                </div>
+
+                {/* Quota */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Quota
+                  </label>
+                  <select
+                    name="quota"
+                    value={formData.quota}
+                    onChange={handleChange}
+                    className="input-field"
+                  >
+                    <option value="AI">All India (AI)</option>
+                    <option value="HS">Home State (HS)</option>
+                    <option value="OS">Other State (OS)</option>
+                    <option value="GO">Goa (GO)</option>
+                    <option value="JK">Jammu & Kashmir (JK)</option>
+                    <option value="LA">Ladakh (LA)</option>
+                  </select>
+                </div>
+
+                {/* Round */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Counselling Round
+                  </label>
+                  <select
+                    name="round"
+                    value={formData.round}
+                    onChange={handleChange}
+                    className="input-field"
+                  >
+                    <option value="1">Round 1</option>
+                    <option value="2">Round 2</option>
+                    <option value="3">Round 3</option>
+                    <option value="4">Round 4</option>
+                    <option value="5">Round 5</option>
+                    <option value="6">Round 6 (Final)</option>
+                  </select>
+                </div>
+
+                {/* Gender */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Gender Preference
+                  </label>
+                  <select
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleChange}
+                    className="input-field"
+                  >
+                    <option value="Gender-Neutral">Gender-Neutral</option>
+                    <option value="Female-only">Female-only</option>
+                  </select>
+                </div>
+
+                {/* Error Message */}
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                    ⚠️ {error}
+                  </div>
+                )}
+
+                {/* Submit Button */}
+                <div className="flex gap-4">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loading ? '🔍 Predicting...' : '🎯 Predict My Colleges'}
+                  </button>
+                  {results && (
+                    <button
+                      type="button"
+                      onClick={handleReset}
+                      className="btn-secondary"
                     >
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="font-bold text-lg text-gray-900">
-                          {college.collegeName}
-                        </h4>
-                        <span className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
-                          {college.college_type}
-                        </span>
-                      </div>
-                      <p className="text-gray-700 font-medium mb-2">{college.branchName}</p>
-                      <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-                        <span>📊 Closing Rank: <strong>{college.closing_rank}</strong></span>
-                        <span>💰 Fees: <strong>{college.fees}</strong></span>
-                        <span className="text-green-600 font-semibold">✅ High Chance</span>
-                      </div>
-                    </div>
-                  ))}
+                      🔄 Reset
+                    </button>
+                  )}
                 </div>
-              </div>
-            )}
-
-            {/* Medium Chance Colleges */}
-            {results.mediumChance && results.mediumChance.length > 0 && (
-              <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="text-3xl">⚡</span>
-                  <h3 className="text-2xl font-bold text-yellow-700">
-                    Medium Chance ({results.mediumChance.length})
-                  </h3>
-                </div>
-                <p className="text-gray-600 mb-6">
-                  You have a <strong>moderate probability</strong> - these colleges are within your reach with the right choice filling strategy.
-                </p>
-                <div className="space-y-4">
-                  {results.mediumChance.map((college, idx) => (
-                    <div
-                      key={idx}
-                      className="border border-yellow-200 bg-yellow-50 rounded-xl p-5 hover:shadow-lg transition-all"
-                    >
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="font-bold text-lg text-gray-900">
-                          {college.collegeName}
-                        </h4>
-                        <span className="bg-yellow-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
-                          {college.college_type}
-                        </span>
-                      </div>
-                      <p className="text-gray-700 font-medium mb-2">{college.branchName}</p>
-                      <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-                        <span>📊 Closing Rank: <strong>{college.closing_rank}</strong></span>
-                        <span>💰 Fees: <strong>{college.fees}</strong></span>
-                        <span className="text-yellow-600 font-semibold">⚡ Medium Chance</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Dream Colleges */}
-            {results.dreamColleges && results.dreamColleges.length > 0 && (
-              <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="text-3xl">⭐</span>
-                  <h3 className="text-2xl font-bold text-purple-700">
-                    Dream Colleges ({results.dreamColleges.length})
-                  </h3>
-                </div>
-                <p className="text-gray-600 mb-6">
-                  These are <strong>aspirational colleges</strong> - require improvement or luck in spot rounds/later rounds.
-                </p>
-                <div className="space-y-4">
-                  {results.dreamColleges.map((college, idx) => (
-                    <div
-                      key={idx}
-                      className="border border-purple-200 bg-purple-50 rounded-xl p-5 hover:shadow-lg transition-all"
-                    >
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="font-bold text-lg text-gray-900">
-                          {college.collegeName}
-                        </h4>
-                        <span className="bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
-                          {college.college_type}
-                        </span>
-                      </div>
-                      <p className="text-gray-700 font-medium mb-2">{college.branchName}</p>
-                      <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-                        <span>📊 Closing Rank: <strong>{college.closing_rank}</strong></span>
-                        <span>💰 Fees: <strong>{college.fees}</strong></span>
-                        <span className="text-purple-600 font-semibold">⭐ Dream</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* No Results */}
-            {results.highChance?.length === 0 && 
-             results.mediumChance?.length === 0 && 
-             results.dreamColleges?.length === 0 && (
-              <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
-                <p className="text-xl text-gray-600">
-                  {results.message || 'No colleges found matching your criteria. Try adjusting your filters.'}
-                </p>
-              </div>
-            )}
-
-            {/* Disclaimer */}
-            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-lg">
-              <p className="text-sm text-yellow-800">
-                <strong>⚠️ Important Disclaimer:</strong> {results.disclaimer}
-              </p>
+              </form>
             </div>
 
-            {/* Action Buttons */}
-            <div className="mt-8 flex justify-center gap-4">
-              <button
-                onClick={() => navigate('/book-session')}
-                className="btn-primary"
-              >
-                📞 Book Counselling Session
-              </button>
-              <button
-                onClick={() => window.print()}
-                className="btn-secondary"
-              >
-                🖨️ Print Results
-              </button>
-            </div>
-          </div>
-        )}
+            {/* Results Section */}
+            {results && (
+              <div className="max-w-6xl mx-auto">
+                {/* Summary */}
+                <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                    📊 Prediction Summary
+                  </h2>
+                  {results.note && (
+                    <div className="mb-5 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+                      {results.note}
+                    </div>
+                  )}
+                  <div className="grid md:grid-cols-4 gap-4">
+                    <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl">
+                      <p className="text-sm text-green-700 font-semibold">Your Rank</p>
+                      <p className="text-2xl font-bold text-green-900">{results.rank}</p>
+                    </div>
+                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl">
+                      <p className="text-sm text-blue-700 font-semibold">Category</p>
+                      <p className="text-2xl font-bold text-blue-900">{results.category}</p>
+                    </div>
+                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl">
+                      <p className="text-sm text-purple-700 font-semibold">State</p>
+                      <p className="text-2xl font-bold text-purple-900">{results.state || 'All India'}</p>
+                    </div>
+                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-xl">
+                      <p className="text-sm text-orange-700 font-semibold">Analyzed</p>
+                      <p className="text-2xl font-bold text-orange-900">{results.totalCollegesAnalyzed}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* High Chance Colleges */}
+                {results.highChance && results.highChance.length > 0 && (
+                  <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
+                    <div className="flex items-center gap-3 mb-6">
+                      <span className="text-3xl">🎯</span>
+                      <h3 className="text-2xl font-bold text-green-700">
+                        High Chance ({results.highChance.length})
+                      </h3>
+                    </div>
+                    <p className="text-gray-600 mb-6">
+                      You have a <strong>strong probability</strong> of getting admission in these colleges based on previous year cutoffs.
+                    </p>
+                    <div className="space-y-4">
+                      {results.highChance.map((college, idx) => (
+                        <div
+                          key={idx}
+                          className="border border-green-200 bg-green-50 rounded-xl p-5 hover:shadow-lg transition-all"
+                        >
+                          <div className="flex justify-between items-start mb-2">
+                            <h4 className="font-bold text-lg text-gray-900">
+                              {college.collegeName}
+                            </h4>
+                            <span className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                              {college.college_type}
+                            </span>
+                          </div>
+                          <p className="text-gray-700 font-medium mb-2">{college.branchName}</p>
+                          <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                            <span>📊 Closing Rank: <strong>{college.closing_rank}</strong></span>
+                            <span>💰 Fees: <strong>{college.fees}</strong></span>
+                            <span className="text-green-600 font-semibold">✅ High Chance</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Medium Chance Colleges */}
+                {results.mediumChance && results.mediumChance.length > 0 && (
+                  <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
+                    <div className="flex items-center gap-3 mb-6">
+                      <span className="text-3xl">⚡</span>
+                      <h3 className="text-2xl font-bold text-yellow-700">
+                        Medium Chance ({results.mediumChance.length})
+                      </h3>
+                    </div>
+                    <p className="text-gray-600 mb-6">
+                      You have a <strong>moderate probability</strong> - these colleges are within your reach with the right choice filling strategy.
+                    </p>
+                    <div className="space-y-4">
+                      {results.mediumChance.map((college, idx) => (
+                        <div
+                          key={idx}
+                          className="border border-yellow-200 bg-yellow-50 rounded-xl p-5 hover:shadow-lg transition-all"
+                        >
+                          <div className="flex justify-between items-start mb-2">
+                            <h4 className="font-bold text-lg text-gray-900">
+                              {college.collegeName}
+                            </h4>
+                            <span className="bg-yellow-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                              {college.college_type}
+                            </span>
+                          </div>
+                          <p className="text-gray-700 font-medium mb-2">{college.branchName}</p>
+                          <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                            <span>📊 Closing Rank: <strong>{college.closing_rank}</strong></span>
+                            <span>💰 Fees: <strong>{college.fees}</strong></span>
+                            <span className="text-yellow-600 font-semibold">⚡ Medium Chance</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Dream Colleges */}
+                {results.dreamColleges && results.dreamColleges.length > 0 && (
+                  <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
+                    <div className="flex items-center gap-3 mb-6">
+                      <span className="text-3xl">⭐</span>
+                      <h3 className="text-2xl font-bold text-purple-700">
+                        Dream Colleges ({results.dreamColleges.length})
+                      </h3>
+                    </div>
+                    <p className="text-gray-600 mb-6">
+                      These are <strong>aspirational colleges</strong> - require improvement or luck in spot rounds/later rounds.
+                    </p>
+                    <div className="space-y-4">
+                      {results.dreamColleges.map((college, idx) => (
+                        <div
+                          key={idx}
+                          className="border border-purple-200 bg-purple-50 rounded-xl p-5 hover:shadow-lg transition-all"
+                        >
+                          <div className="flex justify-between items-start mb-2">
+                            <h4 className="font-bold text-lg text-gray-900">
+                              {college.collegeName}
+                            </h4>
+                            <span className="bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                              {college.college_type}
+                            </span>
+                          </div>
+                          <p className="text-gray-700 font-medium mb-2">{college.branchName}</p>
+                          <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                            <span>📊 Closing Rank: <strong>{college.closing_rank}</strong></span>
+                            <span>💰 Fees: <strong>{college.fees}</strong></span>
+                            <span className="text-purple-600 font-semibold">⭐ Dream</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* No Results */}
+                {results.highChance?.length === 0 && 
+                 results.mediumChance?.length === 0 && 
+                 results.dreamColleges?.length === 0 && (
+                  <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+                    <p className="text-xl text-gray-600">
+                      {results.message || 'No colleges found matching your criteria. Try adjusting your filters.'}
+                    </p>
+                  </div>
+                )}
+
+                {/* Disclaimer */}
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-lg">
+                  <p className="text-sm text-yellow-800">
+                    <strong>⚠️ Important Disclaimer:</strong> {results.disclaimer}
+                  </p>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="mt-8 flex justify-center gap-4">
+                  <button
+                    onClick={() => navigate('/book-session')}
+                    className="btn-primary"
+                  >
+                    📞 Book Counselling Session
+                  </button>
+                  <button
+                    onClick={() => window.print()}
+                    className="btn-secondary"
+                  >
+                    🖨️ Print Results
+                  </button>
+                </div>
+              </div>
+            )}
           </>
+        )}
+
+        {/* Access denied (explicit) - show link to pricing and retry */}
+        {!accessLoading && (!hasAccess || !hasAccess.hasAccess) && (
+          <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8 text-center">
+            <p className="text-gray-700 mb-4">You do not have an active subscription for College Predictor.</p>
+            <div className="flex gap-4 justify-center">
+              <button className="btn-primary" onClick={() => navigate('/pricing')}>Buy access</button>
+              <button className="btn-secondary" onClick={() => {
+                const token = localStorage.getItem('token')
+                if (!token) { navigate('/login'); return }
+                setAccessLoading(true); setHasAccess(null); checkServiceAccess(token)
+              }}>Check again</button>
+            </div>
+            {error && <p className="text-red-600 mt-4">{error}</p>}
+          </div>
         )}
       </div>
     </div>
